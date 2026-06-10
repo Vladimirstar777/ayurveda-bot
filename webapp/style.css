@@ -683,33 +683,95 @@ body::before {
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-md);
+  gap: 2px; /* Small gap to separate tabs */
+  margin-bottom: 0; /* Attach to the content below */
+  background: transparent;
+  padding: 0 4px;
 }
 
 .category-btn {
-  background: var(--bg-card);
+  background: var(--bg-main);
   border: 1px solid var(--border-color);
+  border-bottom: none; /* No bottom border to attach to content */
   color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  padding: 8px 4px;
+  border-radius: 8px 8px 0 0; /* Chrome-like rounded top corners */
+  padding: 10px 4px;
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: center;
+  position: relative;
+  z-index: 1;
+  box-shadow: inset 0 -4px 6px rgba(0,0,0,0.1); /* Inner shadow to make inactive look recessed */
 }
 
 .category-btn.active {
-  background: var(--gold-glow);
+  background: var(--bg-card); /* Match content background */
   color: var(--gold-primary);
-  border-color: var(--gold-primary);
+  border-color: var(--border-color);
+  z-index: 3;
+  box-shadow: none; /* Active tab is flat to content */
+}
+
+/* Pseudo-element to cover the bottom border if needed */
+.category-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--bg-card);
 }
 
 .products-list {
+  background: var(--bg-card);
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-top: none; /* Connect to tabs */
+  border-radius: 0 0 var(--radius-md) var(--radius-md); /* Match tabs above */
+  margin-bottom: var(--spacing-md);
+  min-height: 100px;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
+}
+
+/* ==========================
+   AUTOCOMPLETE SUGGESTIONS
+   ========================== */
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--gold-primary);
+  border-radius: var(--radius-sm);
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.suggestion-item {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+.suggestion-item:hover {
+  background: var(--bg-main);
+}
+.suggestion-item-icon {
+  font-size: 16px;
 }
 
 /* Одна картка продукту */

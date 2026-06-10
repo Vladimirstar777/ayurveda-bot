@@ -832,50 +832,94 @@ function updateDatepickerDisplay() {
 // МЕДИЧНИЙ БЛОКПОСТ
 // ==========================
 function renderConditionsList() {
-  const list = document.getElementById('conditions-list');
+  const list = document.getElementById('selected-conditions');
   if (!list) return;
 
-  const conditions = State.availableConditions;
-  if (!conditions.length) {
-    list.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:16px;">Завантаження станів...</div>';
+  const conditions = State.availableConditions || [];
+  const activeConditions = new Set(State.blockpost.conditions || []);
+  
+  const selectedList = conditions.filter(c => activeConditions.has(c.id));
+
+  if (selectedList.length === 0) {
+    list.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:16px;font-size:12px;">Нічого не вибрано</div>';
     return;
   }
 
-  const activeConditions = new Set(State.blockpost.conditions || []);
-
-  list.innerHTML = conditions.map(cond => {
-    const isActive = activeConditions.has(cond.id);
-    return `
-      <div class="condition-item ${isActive ? 'active' : ''}" id="cond-${cond.id}" onclick="toggleCondition('${cond.id}')">
-        <div class="condition-icon">${cond.icon || '⚕️'}</div>
-        <div class="condition-info">
-          <div class="condition-name">${cond.name_uk}</div>
-          <div class="condition-desc">${cond.description_uk || ''}</div>
-        </div>
-        <label class="toggle-switch" onclick="event.stopPropagation()">
-          <input type="checkbox" id="toggle-${cond.id}" ${isActive ? 'checked' : ''} onchange="toggleCondition('${cond.id}')">
-          <span class="toggle-slider"></span>
-        </label>
+  list.innerHTML = selectedList.map(cond => `
+    <div class="condition-item active" id="cond-${cond.id}">
+      <div class="condition-icon">${cond.icon || '⚕️'}</div>
+      <div class="condition-info">
+        <div class="condition-name">${cond.name_uk}</div>
+        <div class="condition-desc">${cond.description_uk || ''}</div>
       </div>
-    `;
-  }).join('');
+      <button class="ai-send-btn" style="width:30px;height:30px;border-radius:50%;background:rgba(255,0,0,0.1);color:#f44336;font-size:16px;display:flex;align-items:center;justify-content:center;" onclick="removeCondition('${cond.id}')">✕</button>
+    </div>
+  `).join('');
 }
 
-function toggleCondition(condId) {
-  const conditions = new Set(State.blockpost.conditions || []);
-  if (conditions.has(condId)) {
-    conditions.delete(condId);
-  } else {
-    conditions.add(condId);
+function handleConditionSearch(event) {
+  const query = event.target.value.toLowerCase().trim();
+  const suggContainer = document.getElementById('condition-suggestions');
+  
+  if (query.length < 2) {
+    suggContainer.classList.add('hidden');
+    return;
   }
-  State.blockpost.conditions = [...conditions];
-
-  // Оновлюємо UI
-  const item = document.getElementById(`cond-${condId}`);
-  const toggle = document.getElementById(`toggle-${condId}`);
-  if (item) item.classList.toggle('active', conditions.has(condId));
-  if (toggle) toggle.checked = conditions.has(condId);
+  
+  const conditions = State.availableConditions || [];
+  const activeConditions = new Set(State.blockpost.conditions || []);
+  
+  const matches = conditions.filter(c => 
+    !activeConditions.has(c.id) &&
+    (c.name_uk.toLowerCase().includes(query) || (c.description_uk && c.description_uk.toLowerCase().includes(query)))
+  );
+  
+  if (matches.length === 0) {
+    suggContainer.innerHTML = '<div style="padding:12px;color:var(--text-muted);font-size:12px;text-align:center;">Нічого не знайдено</div>';
+  } else {
+    suggContainer.innerHTML = matches.slice(0, 5).map(c => `
+      <div class="suggestion-item" onclick="addConditionFromSearch('${c.id}')">
+        <div class="suggestion-item-icon">${c.icon || '⚕️'}</div>
+        <div>
+          <div style="font-weight:bold;font-size:13px;">${c.name_uk}</div>
+          <div style="font-size:11px;color:var(--text-muted);">${c.description_uk || ''}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+  suggContainer.classList.remove('hidden');
 }
+
+function addConditionFromSearch(condId) {
+  const conditions = new Set(State.blockpost.conditions || []);
+  conditions.add(condId);
+  State.blockpost.conditions = [...conditions];
+  
+  document.getElementById('condition-search').value = '';
+  document.getElementById('condition-suggestions').classList.add('hidden');
+  
+  renderConditionsList();
+  showToast('Додано до списку', 'success');
+}
+
+function removeCondition(condId) {
+  const conditions = new Set(State.blockpost.conditions || []);
+  conditions.delete(condId);
+  State.blockpost.conditions = [...conditions];
+  
+  renderConditionsList();
+}
+
+// Зачиняємо dropdown при кліку поза ним
+document.addEventListener('click', (e) => {
+  const suggContainer = document.getElementById('condition-suggestions');
+  const searchInput = document.getElementById('condition-search');
+  if (suggContainer && !suggContainer.classList.contains('hidden')) {
+    if (e.target !== searchInput && !suggContainer.contains(e.target)) {
+      suggContainer.classList.add('hidden');
+    }
+  }
+});
 
 async function saveBlockpost() {
   try {
