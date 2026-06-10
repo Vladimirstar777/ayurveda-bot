@@ -50,6 +50,7 @@
             <div class="modal-tabs">
                 <button class="tab-btn active" data-tab="profile">Профіль</button>
                 <button class="tab-btn" data-tab="health">Здоров'я</button>
+                <button class="tab-btn" data-tab="manage">Управління</button>
             </div>
             
             <div class="tab-content active" id="tab-profile">
@@ -65,6 +66,26 @@
                 <div id="m-conditions" class="tags-container">
                     <!-- Теги станів -->
                 </div>
+            </div>
+            
+            <div class="tab-content" id="tab-manage">
+                <h4>Нотатки Адміна</h4>
+                <textarea id="m-admin-notes" placeholder="Ваші нотатки про клієнта..." class="admin-textarea"></textarea>
+                
+                <h4>Ручне коригування Доші</h4>
+                <select id="m-manual-dosha" class="admin-select">
+                    <option value="">-- Визначається тестом --</option>
+                    <option value="vata">Vata (Повітря + Ефір)</option>
+                    <option value="pitta">Pitta (Вогонь + Вода)</option>
+                    <option value="kapha">Kapha (Земля + Вода)</option>
+                    <option value="vata_pitta">Vata-Pitta</option>
+                    <option value="vata_kapha">Vata-Kapha</option>
+                    <option value="pitta_kapha">Pitta-Kapha</option>
+                    <option value="tridosha">Tridosha</option>
+                </select>
+                
+                <button id="save-manage-btn" class="primary-btn" style="margin-top: 15px;">💾 Зберегти зміни</button>
+                <p id="manage-status" class="status-text hidden"></p>
             </div>
         </div>
     </div>

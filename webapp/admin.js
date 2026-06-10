@@ -7,6 +7,7 @@ document.documentElement.style.setProperty('--text-color', tg.themeParams.text_c
 document.documentElement.style.setProperty('--accent-color', tg.themeParams.button_color || '#4CAF50');
 
 let allUsers = [];
+let currentUserId = null;
 
 // Elements
 const loginScreen = document.getElementById('login-screen');
@@ -111,6 +112,11 @@ function openUserModal(user) {
     document.getElementById('m-goal').innerText = user.profile.goal || '-';
     document.getElementById('m-created').innerText = new Date(user.created_at).toLocaleString('uk-UA');
     
+    // Management Tab
+    currentUserId = user.user_id;
+    document.getElementById('m-admin-notes').value = user.admin_notes || '';
+    document.getElementById('m-manual-dosha').value = user.manual_dosha || '';
+    
     // Health Tags
     const conditionsContainer = document.getElementById('m-conditions');
     conditionsContainer.innerHTML = '';
@@ -149,3 +155,49 @@ if (sessionStorage.getItem('adminToken')) {
     passwordInput.value = sessionStorage.getItem('adminToken');
     loginBtn.click();
 }
+
+// Save Management Data
+document.getElementById('save-manage-btn').addEventListener('click', async () => {
+    if (!currentUserId) return;
+    
+    const token = sessionStorage.getItem('adminToken');
+    const notes = document.getElementById('m-admin-notes').value;
+    const dosha = document.getElementById('m-manual-dosha').value;
+    const statusEl = document.getElementById('manage-status');
+    
+    try {
+        const response = await fetch(`/api/admin/user/${currentUserId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                admin_notes: notes,
+                manual_dosha: dosha
+            })
+        });
+        
+        if (response.ok) {
+            statusEl.innerText = '✅ Збережено успішно!';
+            statusEl.className = 'status-text success';
+            statusEl.classList.remove('hidden');
+            
+            // Update local state
+            const user = allUsers.find(u => u.user_id === currentUserId);
+            if (user) {
+                user.admin_notes = notes;
+                user.manual_dosha = dosha;
+            }
+            
+            setTimeout(() => statusEl.classList.add('hidden'), 3000);
+        } else {
+            throw new Error('Failed');
+        }
+    } catch (e) {
+        statusEl.innerText = '❌ Помилка збереження';
+        statusEl.className = 'status-text error-text';
+        statusEl.classList.remove('hidden');
+        setTimeout(() => statusEl.classList.add('hidden'), 3000);
+    }
+});

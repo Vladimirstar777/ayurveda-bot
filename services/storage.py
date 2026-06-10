@@ -24,6 +24,8 @@ async def init_db():
                 user_id INTEGER PRIMARY KEY,
                 profile_data TEXT DEFAULT '{}',
                 blockpost_data TEXT DEFAULT '{"conditions": []}',
+                admin_notes TEXT DEFAULT '',
+                manual_dosha TEXT DEFAULT '',
                 created_at TEXT,
                 updated_at TEXT
             )
@@ -155,10 +157,18 @@ class UserStorage:
         """Повертає повний контекст користувача для конвеєра"""
         profile = await self.load_profile()
         blockpost = await self.load_blockpost()
+        manual_dosha = ""
+        async with aiosqlite.connect(DB_FILE) as db:
+            async with db.execute("SELECT manual_dosha FROM users WHERE user_id = ?", (self.user_id,)) as cursor:
+                row = await cursor.fetchone()
+                if row and row[0]:
+                    manual_dosha = row[0]
+                    
         return {
             "user_id": self.user_id,
             "profile": profile,
             "blockpost": blockpost,
+            "manual_dosha": manual_dosha
         }
 
 def get_user_storage(user_id: int) -> UserStorage:
@@ -169,7 +179,7 @@ async def admin_get_all_users() -> list:
     """Для Адмін-панелі: отримує всіх користувачів"""
     users = []
     async with aiosqlite.connect(DB_FILE) as db:
-        async with db.execute("SELECT user_id, profile_data, blockpost_data, created_at, updated_at FROM users ORDER BY updated_at DESC") as cursor:
+        async with db.execute("SELECT user_id, profile_data, blockpost_data, created_at, updated_at, admin_notes, manual_dosha FROM users ORDER BY updated_at DESC") as cursor:
             async for row in cursor:
                 try:
                     profile = json.loads(row[1]) if row[1] else {}
@@ -179,8 +189,24 @@ async def admin_get_all_users() -> list:
                         "profile": profile,
                         "blockpost": blockpost,
                         "created_at": row[3],
-                        "updated_at": row[4]
+                        "updated_at": row[4],
+                        "admin_notes": row[5] or "",
+                        "manual_dosha": row[6] or ""
                     })
                 except Exception as e:
                     logger.error(f"Error parsing user {row[0]}: {e}")
     return users
+
+async def admin_update_user(user_id: int, admin_notes: str, manual_dosha: str) -> bool:
+    """Для Адмін-панелі: оновлює нотатки та ручну дошу клієнта"""
+    try:
+        async with aiosqlite.connect(DB_FILE) as db:
+            await db.execute(
+                "UPDATE users SET admin_notes = ?, manual_dosha = ? WHERE user_id = ?",
+                (admin_notes, manual_dosha, user_id)
+            )
+            await db.commit()
+        return True
+    except Exception as e:
+        logger.error(f"[Storage] Помилка admin_update_user {user_id}: {e}")
+        return False

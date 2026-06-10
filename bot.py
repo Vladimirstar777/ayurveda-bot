@@ -232,6 +232,29 @@ async def api_admin_users(request: web.Request) -> web.Response:
     return web.json_response({"users": users})
 
 
+async def api_admin_update_user(request: web.Request) -> web.Response:
+    """POST /api/admin/user/{user_id} — Оновлює дані користувача (нотатки, доша)"""
+    auth_header = request.headers.get("Authorization", "")
+    expected_password = "Bearer 12345678"
+    if auth_header != expected_password:
+        return web.json_response({"error": "Unauthorized"}, status=401)
+        
+    user_id = request.match_info.get("user_id")
+    if not user_id:
+        return web.json_response({"error": "Missing user_id"}, status=400)
+        
+    try:
+        data = await request.json()
+        admin_notes = data.get("admin_notes", "")
+        manual_dosha = data.get("manual_dosha", "")
+    except Exception:
+        return web.json_response({"error": "Invalid JSON"}, status=400)
+        
+    from services.storage import admin_update_user
+    success = await admin_update_user(int(user_id), admin_notes, manual_dosha)
+    return web.json_response({"success": success})
+
+
 def create_web_app(bot: Bot = None, dp: Dispatcher = None) -> web.Application:
     """Створює aiohttp додаток з усіма маршрутами"""
     app = web.Application(middlewares=[cors_middleware])
@@ -245,6 +268,7 @@ def create_web_app(bot: Bot = None, dp: Dispatcher = None) -> web.Application:
 
     # Admin API маршрути
     app.router.add_get("/api/admin/users", api_admin_users)
+    app.router.add_post("/api/admin/user/{user_id}", api_admin_update_user)
 
     # Статичні файли Web App
     app.router.add_get("/webapp/", serve_webapp)

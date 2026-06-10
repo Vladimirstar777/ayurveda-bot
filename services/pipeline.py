@@ -35,6 +35,12 @@ async def run_ration_pipeline(
     profile = context["profile"]
     blockpost_data = context["blockpost"]
     active_conditions = blockpost_data.get("conditions", [])
+    
+    # Застосовуємо ручне коригування доші від адміна
+    manual_dosha = context.get("manual_dosha", "")
+    if manual_dosha:
+        profile["dosha_type"] = manual_dosha
+        profile["is_manual_override"] = True
 
     # --- РОБОТ 1: МЕДИЧНИЙ БЛОКПОСТ ---
     blockpost = get_blockpost()

@@ -179,3 +179,48 @@
 .info-row .label {
     color: var(--text-muted);
 }
+
+/* Management Elements */
+.admin-textarea {
+    width: 100%;
+    min-height: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-color);
+    padding: 10px;
+    font-family: inherit;
+    margin-bottom: 15px;
+    resize: vertical;
+}
+
+.admin-textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.admin-select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: var(--text-color);
+    padding: 10px;
+    font-family: inherit;
+    margin-bottom: 15px;
+}
+
+.admin-select option {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.status-text {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.status-text.success {
+    color: var(--accent-color);
+}
