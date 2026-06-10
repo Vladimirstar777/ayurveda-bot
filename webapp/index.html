@@ -23,11 +23,12 @@
   <div class="app" id="app">
     <!-- HEADER -->
     <header class="app-header" id="app-header">
-      <div class="header-logo">
-        <div class="header-logo-icon">🌿</div>
-        <div>
+      <div class="header-logo" style="display:flex; align-items:center; gap:8px;">
+        <button id="nav-back-btn" class="ai-send-btn hidden" onclick="goBack()" style="width:30px;height:30px;background:var(--bg-main);color:var(--text-primary);"><i class="fas fa-arrow-left">←</i></button>
+        <div class="header-logo-icon" onclick="goHome()" style="cursor:pointer;">🌿</div>
+        <div onclick="goHome()" style="cursor:pointer;">
           <div class="header-title">KSVeda</div>
-          <div class="header-subtitle">Ecosystem 4.3</div>
+          <div class="header-subtitle">Ecosystem 6.0</div>
         </div>
       </div>
       <div class="header-meta">
@@ -387,18 +388,28 @@
           <div class="tab-section-title">🍳 Розумний Рецепт</div>
           <div class="tab-section-desc">Генерація 3-х варіантів рецептів на основі вашого стану та медичних показників.</div>
           
+          <!-- Вибір прийому їжі -->
+          <div style="margin-bottom: 12px;">
+            <label style="font-size:12px; color:var(--text-secondary); margin-bottom:4px; display:block;">Оберіть прийом їжі:</label>
+            <div style="display:flex; gap:8px;">
+              <button class="category-btn active" id="meal-btn-breakfast" onclick="selectMealTime('breakfast')" style="flex:1; border-radius:8px;">Сніданок</button>
+              <button class="category-btn" id="meal-btn-lunch" onclick="selectMealTime('lunch')" style="flex:1; border-radius:8px;">Обід</button>
+              <button class="category-btn" id="meal-btn-dinner" onclick="selectMealTime('dinner')" style="flex:1; border-radius:8px;">Вечеря</button>
+            </div>
+          </div>
+          
           <div style="display:flex; gap:8px; width:100%;">
             <button class="magic-btn" onclick="generateRecipes('normal')" id="recipe-generate-btn" style="flex:1;">
               <span class="magic-btn-emoji">🍲</span>
               <div class="magic-btn-text">
-                <span class="magic-btn-main">Згенерувати страви</span>
+                <span class="magic-btn-main">Звичайне</span>
                 <span class="magic-btn-sub">Локальні продукти</span>
               </div>
             </button>
             <button class="magic-btn" onclick="generateRecipes('bachelor')" id="recipe-bachelor-btn" style="flex:1; background:linear-gradient(135deg, #1f2937, #374151); border-color:#4b5563;">
               <span class="magic-btn-emoji">🍳</span>
               <div class="magic-btn-text">
-                <span class="magic-btn-main">Для Холостяка</span>
+                <span class="magic-btn-main">Холостяк</span>
                 <span class="magic-btn-sub">Швидко з того, що є</span>
               </div>
             </button>
