@@ -29,7 +29,7 @@ STORAGE_PATH.mkdir(parents=True, exist_ok=True)
 # =========================
 BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
 WEBAPP_URL: str = os.getenv("WEBAPP_URL", "http://localhost:8080")
-BOT_MODE: str = "polling"  # Примусово вмикаємо polling для обходу проблем з Render
+BOT_MODE: str = os.getenv("BOT_MODE", "polling")  # webhook або polling
 WEBHOOK_SECRET: str = os.getenv("WEBHOOK_SECRET", "ayurveda_secret_2026")
 WEBHOOK_PATH = "/webhook"
 
