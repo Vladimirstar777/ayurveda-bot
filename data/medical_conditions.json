@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Аюрведична база медичних станів та продуктів-тригерів",
+    "source": "Класична Аюрведа: Чарака Самхіта, Сушрута Самхіта",
+    "last_updated": "2026-06-10"
+  },
+  "conditions": [
+    {
+      "id": "ulcer",
+      "name_uk": "Виразка шлунка або 12-палої кишки",
+      "name_en": "Peptic Ulcer",
+      "icon": "🔴",
+      "description_uk": "Ерозія слизової оболонки шлунка або дванадцятипалої кишки",
+      "blocked_products": [],
+      "blocked_categories": ["spicy", "acidic", "fried", "raw_onion", "raw_garlic", "alcohol", "caffeine"],
+      "blocked_tags": ["pitta_aggravating_strong", "stimulant", "fermented_strong"],
+      "ayurveda_note": "Стан надлишку Піта-доші. Необхідно уникати гострих, кислих та жарених продуктів."
+    },
+    {
+      "id": "gastritis",
+      "name_uk": "Гастрит",
+      "name_en": "Gastritis",
+      "icon": "🟠",
+      "description_uk": "Запалення слизової оболонки шлунка",
+      "blocked_products": [],
+      "blocked_categories": ["spicy", "acidic", "fried", "caffeine", "alcohol"],
+      "blocked_tags": ["pitta_aggravating_strong", "stimulant"],
+      "ayurveda_note": "Схожий на виразку стан Піта-доші. Заспокоює охолоджуюча, легка їжа."
+    },
+    {
+      "id": "diabetes",
+      "name_uk": "Цукровий діабет",
+      "name_en": "Diabetes Mellitus",
+      "icon": "🔴",
+      "description_uk": "Порушення регуляції рівня цукру в крові",
+      "blocked_products": [],
+      "blocked_categories": ["high_glycemic", "refined_sugar", "white_rice", "sweet_fruit_high"],
+      "blocked_tags": ["sweetener", "high_sugar", "kapha_aggravating_sweet"],
+      "ayurveda_note": "Мадхумеха в Аюрведі. Переважно Капха-дисбаланс. Суворе обмеження солодкого та важкої їжі."
+    },
+    {
+      "id": "hypertension",
+      "name_uk": "Гіпертонія (підвищений тиск)",
+      "name_en": "Hypertension",
+      "icon": "🟠",
+      "description_uk": "Стійко підвищений артеріальний тиск",
+      "blocked_products": [],
+      "blocked_categories": ["salty", "stimulant", "fried", "processed_meat"],
+      "blocked_tags": ["pitta_aggravating_strong", "vata_aggravating_strong", "high_sodium"],
+      "ayurveda_note": "Ракта-вата. Необхідно уникати солоних, гострих та стимулюючих продуктів."
+    },
+    {
+      "id": "thyroid",
+      "name_uk": "Захворювання щитоподібної залози",
+      "name_en": "Thyroid Disease",
+      "icon": "🟡",
+      "description_uk": "Порушення функції щитоподібної залози (гіпо або гіпертиреоз)",
+      "blocked_products": [],
+      "blocked_categories": ["goitrogenic_raw"],
+      "blocked_tags": ["thyroid_disruptor"],
+      "ayurveda_note": "Пов'язано з дисбалансом всіх трьох Дош. Уникайте сирих хрестоцвітих овочів."
+    },
+    {
+      "id": "kidney_stones",
+      "name_uk": "Сечокам'яна хвороба (каміння в нирках)",
+      "name_en": "Kidney Stones",
+      "icon": "🟠",
+      "description_uk": "Утворення каменів у нирках або сечоводах",
+      "blocked_products": [],
+      "blocked_categories": ["high_oxalate", "high_purine"],
+      "blocked_tags": ["oxalate_rich", "purine_rich", "calcium_excessive"],
+      "ayurveda_note": "Вата та Піта-дисбаланс. Обмежте продукти з оксалатами та пуринами."
+    },
+    {
+      "id": "liver_disease",
+      "name_uk": "Захворювання печінки",
+      "name_en": "Liver Disease",
+      "icon": "🔴",
+      "description_uk": "Порушення функції печінки (жировий гепатоз, цироз тощо)",
+      "blocked_products": [],
+      "blocked_categories": ["fried", "alcohol", "processed_meat", "spicy", "raw_mushrooms"],
+      "blocked_tags": ["pitta_aggravating_strong", "liver_toxic", "heavy"],
+      "ayurveda_note": "Піта-орган. Необхідна легка, охолоджуюча та гіркувата їжа."
+    },
+    {
+      "id": "heart_disease",
+      "name_uk": "Серцево-судинні захворювання",
+      "name_en": "Cardiovascular Disease",
+      "icon": "🔴",
+      "description_uk": "Захворювання серця та судин",
+      "blocked_products": [],
+      "blocked_categories": ["saturated_fat_high", "fried", "processed_meat", "salty", "stimulant"],
+      "blocked_tags": ["pitta_aggravating_strong", "high_sodium", "cholesterol_high"],
+      "ayurveda_note": "Хрідайя-рога. Легка, поживна, заспокоююча їжа. Уникайте важкого та жирного."
+    },
+    {
+      "id": "lactose",
+      "name_uk": "Непереносимість лактози",
+      "name_en": "Lactose Intolerance",
+      "icon": "🟡",
+      "description_uk": "Нездатність перетравлювати молочний цукор (лактозу)",
+      "blocked_products": [],
+      "blocked_categories": ["dairy_lactose"],
+      "blocked_tags": ["lactose_containing"],
+      "ayurveda_note": "Аюрведа рекомендує топлене масло (гхі) — воно не містить лактози."
+    },
+    {
+      "id": "gluten",
+      "name_uk": "Целіакія або непереносимість глютену",
+      "name_en": "Celiac / Gluten Intolerance",
+      "icon": "🟡",
+      "description_uk": "Аутоімунна реакція або непереносимість білку глютену",
+      "blocked_products": [],
+      "blocked_categories": ["gluten_containing"],
+      "blocked_tags": ["gluten"],
+      "ayurveda_note": "Агні-дисбаланс. Рис, пшоно, амарант та безглютенові зернові — відмінний вибір."
+    }
+  ]
+}

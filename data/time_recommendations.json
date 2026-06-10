@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Аюрведичні рекомендації харчування залежно від часу доби та сезону",
+    "last_updated": "2026-06-10"
+  },
+  "meal_periods": {
+    "early_morning": {
+      "id": "early_morning",
+      "name_uk": "Ранній ранок (Брахма Мухурта)",
+      "emoji": "🌅",
+      "hours": [5, 7],
+      "dosha_active": "vata",
+      "description_uk": "Час Вата. Тіло прокидається. Почни з теплої води або відвару.",
+      "recommended_ids": ["water", "ginger_tea", "tulsi_tea", "aloe_vera", "lemon"],
+      "avoid_ids": ["coffee", "white_sugar", "cold_food"],
+      "tip_uk": "Випий склянку теплої води з лимоном або імбирем для пробудження Агні"
+    },
+    "breakfast": {
+      "id": "breakfast",
+      "name_uk": "Сніданок",
+      "emoji": "🌄",
+      "hours": [7, 10],
+      "dosha_active": "kapha",
+      "description_uk": "Час Капха. Легкий та теплий сніданок запускає метаболізм.",
+      "recommended_ids": ["oatmeal_porridge", "basmati_rice", "sweet_potato", "banana", "dates", "almonds", "almond_milk", "millet_porridge", "eggs", "ghee", "herbal_tea", "ginger_tea", "honey"],
+      "avoid_ids": ["fried_food", "heavy_meat", "cold_dairy"],
+      "tip_uk": "Ідеальний сніданок: тепла каша з гхі, мигдалем та корицею"
+    },
+    "lunch": {
+      "id": "lunch",
+      "name_uk": "Обід (Найважливіший прийом їжі)",
+      "emoji": "☀️",
+      "hours": [10, 14],
+      "dosha_active": "pitta",
+      "description_uk": "Час Піта — Агні (травний вогонь) найсильніший. Основна їжа дня.",
+      "recommended_ids": ["basmati_rice", "mung_beans", "red_lentils", "chicken", "salmon", "pumpkin", "carrot", "zucchini", "ghee", "olive_oil", "turmeric", "cumin", "fennel", "cilantro", "quinoa", "buckwheat_porridge"],
+      "avoid_ids": ["cold_food", "ice_cream", "heavy_desserts"],
+      "tip_uk": "Обід має бути найситнішим. Додай гхі та спеції для підтримки Агні"
+    },
+    "afternoon_snack": {
+      "id": "afternoon_snack",
+      "name_uk": "Полудень / Перекус",
+      "emoji": "🌤️",
+      "hours": [14, 17],
+      "dosha_active": "vata",
+      "description_uk": "Час Вата. Енергія знижується — легкий та поживний перекус.",
+      "recommended_ids": ["almonds", "dates", "pumpkin_seeds", "apple", "pear", "dark_chocolate", "herbal_tea", "chamomile_tea", "chia_seeds", "cashews"],
+      "avoid_ids": ["heavy_meals", "fried_food"],
+      "tip_uk": "Мигдаль або фініки з чаєм — ідеальний аюрведичний перекус"
+    },
+    "dinner": {
+      "id": "dinner",
+      "name_uk": "Вечеря (Легка)",
+      "emoji": "🌙",
+      "hours": [17, 20],
+      "dosha_active": "kapha",
+      "description_uk": "Час Капха. Вечеря має бути легшою за обід і не пізніше 20:00.",
+      "recommended_ids": ["mung_beans", "rice_porridge", "zucchini", "carrot", "pumpkin", "red_lentils", "herbal_tea", "chamomile_tea", "ghee", "ginger"],
+      "avoid_ids": ["heavy_meat", "fried_food", "white_sugar", "dairy_cold", "excess_salt"],
+      "tip_uk": "Кіча з маш-сочевиці та рису — ідеальна легка аюрведична вечеря"
+    },
+    "evening": {
+      "id": "evening",
+      "name_uk": "Вечір (Після 20:00)",
+      "emoji": "🌛",
+      "hours": [20, 22],
+      "dosha_active": "kapha",
+      "description_uk": "Піта-ніч починається. Уникай важкої їжі. Тепле молоко або трав'яний чай.",
+      "recommended_ids": ["chamomile_tea", "tulsi_tea", "milk_cows", "honey", "ashwagandha", "triphala"],
+      "avoid_ids": ["coffee", "stimulant", "heavy_food", "sweets"],
+      "tip_uk": "Тепле молоко з ашвагандою та мускатом — аюрведичний нічний тонік"
+    },
+    "night": {
+      "id": "night",
+      "name_uk": "Ніч (Після 22:00)",
+      "emoji": "🌃",
+      "hours": [22, 5],
+      "dosha_active": "pitta",
+      "description_uk": "Час нічного Піта. Тіло відновлюється. Нічна їжа — табу в Аюрведі.",
+      "recommended_ids": [],
+      "avoid_ids": ["all_food"],
+      "tip_uk": "Після 22:00 Аюрведа рекомендує не їсти — дай Піта-вогню відновлювати тіло"
+    }
+  },
+  "seasons": {
+    "spring": {
+      "id": "spring",
+      "name_uk": "Весна (Березень-Травень)",
+      "emoji": "🌸",
+      "months": [3, 4, 5],
+      "dosha_active": "kapha",
+      "description_uk": "Сезон Капха. Тане сніг, накопичений слиз виходить. Час очищення.",
+      "recommended_foods": ["millet", "barley", "honey", "ginger", "turmeric", "nettle", "bean_sprouts", "green_peas"],
+      "avoid_foods": ["dairy_excess", "heavy_sweets", "cold_food"],
+      "tip_uk": "Весна — найкращий час для детоксу та голодування. Їж легко та тепло."
+    },
+    "summer": {
+      "id": "summer",
+      "name_uk": "Літо (Червень-Серпень)",
+      "emoji": "☀️",
+      "months": [6, 7, 8],
+      "dosha_active": "pitta",
+      "description_uk": "Сезон Піта. Жара підсилює вогонь. Час охолодження та зволоження.",
+      "recommended_foods": ["cucumber", "coconut_fresh", "mint", "coriander_seed", "watermelon", "mango", "aloe_vera", "ghee", "basmati_rice"],
+      "avoid_foods": ["spicy", "acidic", "alcohol", "coffee"],
+      "tip_uk": "Літо — час охолоджуючих продуктів. Кокос, м'ята та гхі — твої союзники."
+    },
+    "autumn": {
+      "id": "autumn",
+      "name_uk": "Осінь (Вересень-Листопад)",
+      "emoji": "🍂",
+      "months": [9, 10, 11],
+      "dosha_active": "vata",
+      "description_uk": "Сезон Вата. Вітер та холод збуджують рух. Час заземлення та тепла.",
+      "recommended_foods": ["sweet_potato", "pumpkin", "basmati_rice", "ghee", "sesame_oil", "dates", "almonds", "ginger", "cinnamon"],
+      "avoid_foods": ["raw_food", "cold_drinks", "dry_food"],
+      "tip_uk": "Осінь — час для теплого, вологого та маслянистого. Масажуй тіло кунжутною олією."
+    },
+    "winter": {
+      "id": "winter",
+      "name_uk": "Зима (Грудень-Лютий)",
+      "emoji": "❄️",
+      "months": [12, 1, 2],
+      "dosha_active": "vata",
+      "description_uk": "Глибокий Вата-сезон. Агні найсильніший у цей час. Живи та грійся.",
+      "recommended_foods": ["buckwheat", "oatmeal", "ghee", "sesame_oil", "ginger", "turmeric", "almonds", "walnuts", "honey", "chicken", "salmon"],
+      "avoid_foods": ["raw_salads", "cold_food", "ice"],
+      "tip_uk": "Зима — час для поживних, гарячих та маслянистих страв. Агні сильний — їж добре!"
+    }
+  }
+}

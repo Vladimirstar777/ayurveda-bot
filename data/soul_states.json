@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "version": "1.0",
+    "description": "Аюрведичні харчові рекомендації для різних ментально-емоційних станів (Робот 3: Душевний синергізм)",
+    "last_updated": "2026-06-10"
+  },
+  "states": {
+    "balanced": {
+      "id": "balanced",
+      "name_uk": "Збалансований",
+      "emoji": "⚖️",
+      "description_uk": "Ти у гармонії. Дотримуйся звичайних аюрведичних рекомендацій для твого типу Доші.",
+      "boosted_tags": ["sattvic", "easy_digest"],
+      "reduced_tags": [],
+      "priority_products": ["mung_beans", "basmati_rice", "ghee", "herbal_tea"],
+      "avoid_tags": [],
+      "tip_uk": "Чудово! Продовжуй живити свою Доша-конституцію з радістю."
+    },
+    "stress": {
+      "id": "stress",
+      "name_uk": "Стрес / Тривога",
+      "emoji": "😰",
+      "description_uk": "Стрес активує Вата-дисбаланс. Потрібні заземлюючі, теплі та живлячі продукти.",
+      "boosted_tags": ["grounding", "vata_balancing", "calming", "sattvic", "warming"],
+      "reduced_tags": ["stimulant", "vata_aggravating_strong", "caffeine", "rajasic"],
+      "priority_products": ["sweet_potato", "basmati_rice", "ghee", "almonds", "dates", "chamomile_tea", "ashwagandha", "sesame_oil", "milk_cows"],
+      "avoid_tags": ["stimulant", "vata_aggravating_strong"],
+      "ayurveda_note": "При стресі Вата розганяється як вітер. Зупини його теплом, маслом та заземленням.",
+      "tip_uk": "🧘 Сьогодні обери: теплу кашу, гхі, мигдаль або ашваганду. Уникай кофеїну."
+    },
+    "fatigue": {
+      "id": "fatigue",
+      "name_uk": "Втома / Виснаження",
+      "emoji": "😴",
+      "description_uk": "Втома — це виснажена Оджас (вітальна сила). Потрібні живлячі та відновлюючі продукти.",
+      "boosted_tags": ["energy", "protein_rich", "iron_rich", "grounding", "sattvic", "rejuvenating"],
+      "reduced_tags": ["drying", "light", "kapha_balancing"],
+      "priority_products": ["dates", "almonds", "ghee", "mung_beans", "red_lentils", "salmon", "eggs", "banana", "spirulina", "ashwagandha", "honey"],
+      "avoid_tags": ["drying", "vata_aggravating_strong"],
+      "ayurveda_note": "Оджас відновлюється живлящою їжею, відпочинком та маслянистими продуктами.",
+      "tip_uk": "⚡ Сьогодні обери: фініки, мигдаль, гхі або рисову кашу з маш. Дай тілу відновитися."
+    },
+    "inflammation": {
+      "id": "inflammation",
+      "name_uk": "Запалення / Жар",
+      "emoji": "🔥",
+      "description_uk": "Надлишок Піта. Охолодження та заспокоєння вогню — пріоритет.",
+      "boosted_tags": ["cooling", "pitta_balancing", "anti_inflammatory", "calming"],
+      "reduced_tags": ["pitta_aggravating_strong", "spicy", "acidic", "stimulant"],
+      "priority_products": ["cucumber", "coconut_fresh", "mint", "coriander_seed", "aloe_vera", "chamomile_tea", "rose_water", "fennel", "basmati_rice", "ghee"],
+      "avoid_tags": ["pitta_aggravating_strong", "spicy", "acidic"],
+      "ayurveda_note": "Піта-вогонь потребує охолодження. Уникай гострого, кислого та стимулюючого.",
+      "tip_uk": "❄️ Охолодити Піта: алое вера вранці, кокос, м'ята та кінза протягом дня."
+    },
+    "digestive_issues": {
+      "id": "digestive_issues",
+      "name_uk": "Проблеми з Травленням",
+      "emoji": "😣",
+      "description_uk": "Слабкий Агні. Потрібні легкі, теплі та спеції для підтримки травлення.",
+      "boosted_tags": ["easy_digest", "digestive", "carminative", "warming", "light"],
+      "reduced_tags": ["heavy", "kapha_aggravating_sweet", "raw_food"],
+      "priority_products": ["mung_beans", "ginger", "cumin", "fennel", "basmati_rice", "ghee", "rice_porridge", "ginger_tea", "dill"],
+      "avoid_tags": ["heavy", "fried", "cold_food"],
+      "ayurveda_note": "Кіча з машем та імбир — аюрведичне золото для відновлення травлення.",
+      "tip_uk": "🌿 Сьогодні їж легко: кіча (рис+маш), імбирний чай, гхі та кмин у страви."
+    },
+    "low_immunity": {
+      "id": "low_immunity",
+      "name_uk": "Слабкий Імунітет",
+      "emoji": "🛡️",
+      "description_uk": "Виснажена Оджас та Беджа. Потрібні імуностимулюючі адаптогени.",
+      "boosted_tags": ["immune_boost", "adaptogen", "antioxidant", "vitamin_c", "anti_inflammatory"],
+      "reduced_tags": ["immune_suppressing"],
+      "priority_products": ["turmeric", "ginger", "tulsi_tea", "ashwagandha", "spirulina", "gooseberry_amla", "blackcurrant", "garlic_cooked", "honey", "pumpkin_seeds"],
+      "avoid_tags": ["stimulant", "rajasic"],
+      "ayurveda_note": "Куркума + чорний перець + гхі = потужний аюрведичний імуномодулятор.",
+      "tip_uk": "🦠 Золоте молоко (куркума + гхі + молоко) — аюрведичний щит від хвороб."
+    },
+    "weight_loss": {
+      "id": "weight_loss",
+      "name_uk": "Зниження Ваги",
+      "emoji": "⚖️",
+      "description_uk": "Дисбаланс Капха. Легкі, сухі та зігріваючі продукти для метаболізму.",
+      "boosted_tags": ["kapha_balancing", "drying", "light", "warming", "detox"],
+      "reduced_tags": ["kapha_aggravating_sweet", "heavy", "oily", "sweetener"],
+      "priority_products": ["millet", "barley", "mung_beans", "ginger", "turmeric", "honey", "green_lentils", "nettle", "celery", "ginger_tea"],
+      "avoid_tags": ["kapha_aggravating_sweet", "heavy", "oily"],
+      "ayurveda_note": "Мед (не нагрітий!) та пшоно — кращі помічники при схудненні за Аюрведою.",
+      "tip_uk": "💪 Для Капха-балансу: легкий сніданок, основна їжа в обід, рання вечеря."
+    }
+  },
+  "quick_buttons": [
+    {
+      "id": "balanced",
+      "label_uk": "Збалансований",
+      "emoji": "⚖️"
+    },
+    {
+      "id": "stress",
+      "label_uk": "Стрес",
+      "emoji": "😰"
+    },
+    {
+      "id": "fatigue",
+      "label_uk": "Втома",
+      "emoji": "😴"
+    },
+    {
+      "id": "inflammation",
+      "label_uk": "Жар / Запалення",
+      "emoji": "🔥"
+    },
+    {
+      "id": "digestive_issues",
+      "label_uk": "Травлення",
+      "emoji": "😣"
+    },
+    {
+      "id": "low_immunity",
+      "label_uk": "Імунітет",
+      "emoji": "🛡️"
+    }
+  ]
+}

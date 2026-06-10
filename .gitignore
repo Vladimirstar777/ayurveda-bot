@@ -1,0 +1,33 @@
+# Аюрведа Бот — .gitignore
+
+# Середовище
+.env
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Сховище даних користувачів (персональні дані — не в репозиторії!)
+storage/
+
+# Логи
+logs/
+*.log
+
+# Системні файли
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Python virtual environment
+venv/
+env/
+.venv/

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0f1a" />
+  <title>Аюрведа Радник</title>
+  <meta name="description" content="Персональний аюрведичний радник з харчування. Раціон підібраний під ваш тип Доші, час доби та стан здоров'я." />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- HEADER -->
+    <header class="app-header" id="app-header">
+      <div class="header-logo">
+        <div class="header-logo-icon">🌿</div>
+        <div>
+          <div class="header-title">Аюрведа</div>
+          <div class="header-subtitle">Радник</div>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="header-time" id="header-time">--:--</div>
+        <div class="header-dosha-badge dosha-badge-none" id="header-dosha-badge">Доша не визначена</div>
+      </div>
+    </header>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="main-content">
+
+      <!-- ==================
+           TAB 1: РАЦІОН
+           ================== -->
+      <div class="tab-pane" id="tab-ration" role="tabpanel">
+
+        <!-- Поточний прийом їжі -->
+        <div class="meal-period-card" id="meal-period-card">
+          <div class="meal-period-emoji" id="meal-emoji">☀️</div>
+          <div class="meal-period-info">
+            <div class="meal-period-name" id="meal-period-name">Завантаження...</div>
+            <div class="meal-period-desc" id="meal-period-desc"></div>
+            <div class="meal-period-tip" id="meal-period-tip"></div>
+          </div>
+        </div>
+
+        <!-- Душевний стан (Робот 3) -->
+        <div class="soul-state-section">
+          <div class="soul-state-title">🧘 Як ти зараз?</div>
+          <div class="soul-state-grid" id="soul-state-grid">
+            <!-- Генерується JS -->
+          </div>
+        </div>
+
+        <!-- ЧАРІВНА КНОПКА -->
+        <div class="magic-btn-wrapper">
+          <button class="magic-btn" id="magic-btn" onclick="generateRation()">
+            <span class="magic-btn-emoji">✨</span>
+            <div class="magic-btn-text">
+              <span class="magic-btn-main">Підібрати раціон зараз</span>
+              <span class="magic-btn-sub" id="magic-btn-sub">на основі вашого профілю та доші</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Результат раціону -->
+        <div id="ration-result" class="hidden">
+
+          <!-- Рекомендовані продукти -->
+          <div class="products-section mb-md">
+            <div class="section-header">
+              <div class="section-title">✅ Рекомендовано</div>
+              <div class="section-count" id="safe-count">0 продуктів</div>
+            </div>
+            <div class="products-list" id="safe-products-list">
+              <!-- Картки генеруються JS -->
+            </div>
+          </div>
+
+          <!-- Заблоковані продукти (якщо є) -->
+          <div class="products-section mb-md" id="blocked-section">
+            <div class="section-header">
+              <div class="section-title">🚫 Під забороною</div>
+              <div class="section-count" id="blocked-count">0 продуктів</div>
+            </div>
+            <div class="products-list" id="blocked-products-list">
+              <!-- Картки генеруються JS -->
+            </div>
+          </div>
+
+        </div><!-- /ration-result -->
+
+        <!-- Стан завантаження -->
+        <div id="ration-loading" class="hidden">
+          <div class="loading-overlay">
+            <div class="loader"></div>
+            <div class="loading-text">Конвеєр аналізує ваш профіль...<br>🤖 Робот 1 → 2 → 3</div>
+          </div>
+        </div>
+
+        <!-- Порожній стан (перший запуск) -->
+        <div id="ration-empty">
+          <div style="padding: 16px 16px 0;">
+            <div class="card" style="text-align:center; padding: 24px 16px;">
+              <div style="font-size:48px; margin-bottom:12px;">🌿</div>
+              <div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">
+                Твій персональний раціон
+              </div>
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;">
+                Заповни профіль та відзнач медичні особливості,<br>
+                потім натисни чарівну кнопку ✨
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('profile')">
+                👤 Заповнити профіль
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tab-ration -->
+
+      <!-- ==================
+           TAB 2: ПРОФІЛЬ
+           ================== -->
+      <div class="tab-pane hidden" id="tab-profile" role="tabpanel">
+        <div class="tab-section">
+          <div class="tab-section-title">👤 Мій Профіль</div>
+          <div class="tab-section-desc">Заповни анкету — чим точніші дані, тим персональніший раціон</div>
+
+          <form id="profile-form" onsubmit="saveProfile(event)">
+
+            <!-- Ім'я -->
+            <div class="form-group">
+              <label class="form-label" for="input-name">
+                <span class="form-label-icon">👤</span>
+                Ім'я та прізвище
+              </label>
+              <input
+                type="text"
+                id="input-name"
+                class="form-input"
+                placeholder="Наприклад: Микола Коваль"
+                autocomplete="name"
+                maxlength="60"
+              />
+              <div class="form-hint" id="hint-name"></div>
+            </div>
+
+            <!-- Телефон -->
+            <div class="form-group">
+              <label class="form-label" for="input-phone">
+                <span class="form-label-icon">📱</span>
+                Номер телефону
+              </label>
+              <input
+                type="tel"
+                id="input-phone"
+                class="form-input"
+                placeholder="+380 XX XXX XX XX"
+                autocomplete="tel"
+                maxlength="20"
+              />
+              <div class="form-hint" id="hint-phone"></div>
+            </div>
+
+            <!-- Місто -->
+            <div class="form-group">
+              <label class="form-label" for="input-city">
+                <span class="form-label-icon">📍</span>
+                Місто
+              </label>
+              <input
+                type="text"
+                id="input-city"
+                class="form-input"
+                placeholder="Наприклад: Київ"
+                maxlength="50"
+              />
+              <div class="form-hint" id="hint-city"></div>
+            </div>
+
+            <!-- Дата народження (DatePicker) -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="form-label-icon">📅</span>
+                Дата народження
+              </label>
+              <div class="datepicker-wrapper" id="datepicker-wrapper">
+                <div class="datepicker-display" id="datepicker-display" onclick="toggleDatepicker()">
+                  <span class="datepicker-value placeholder" id="datepicker-value">Оберіть дату</span>
+                  <span class="datepicker-chevron">▾</span>
+                </div>
+                <div class="datepicker-drums" id="datepicker-drums">
+                  <!-- Рік -->
+                  <div class="drum-column">
+                    <div class="drum-label">Рік</div>
+                    <div class="drum-list" id="drum-year" onscroll="onDrumScroll('year', this)"></div>
+                  </div>
+                  <!-- Місяць -->
+                  <div class="drum-column">
+                    <div class="drum-label">Місяць</div>
+                    <div class="drum-list" id="drum-month" onscroll="onDrumScroll('month', this)"></div>
+                  </div>
+                  <!-- День -->
+                  <div class="drum-column">
+                    <div class="drum-label">День</div>
+                    <div class="drum-list" id="drum-day" onscroll="onDrumScroll('day', this)"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-hint" id="hint-birthdate">Для точного розрахунку коефіцієнту віку</div>
+            </div>
+
+            <!-- Доша (результат квізу або ручний вибір) -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="form-label-icon">🧬</span>
+                Тип Доші (Пракріті)
+              </label>
+              <div id="dosha-result-display" style="margin-bottom:8px;"></div>
+              <button type="button" class="btn btn-outline btn-full" id="quiz-btn" onclick="openQuiz()">
+                🧘 Пройти міні-анкету визначення Доші
+              </button>
+              <input type="hidden" id="input-dosha" value="" />
+            </div>
+
+            <button type="submit" class="btn btn-gold btn-full mt-md" id="save-profile-btn">
+              💾 Зберегти профіль
+            </button>
+
+          </form>
+        </div>
+      </div><!-- /tab-profile -->
+
+      <!-- ==================
+           TAB 3: ЗДОРОВ'Я (БЛОКПОСТ)
+           ================== -->
+      <div class="tab-pane hidden" id="tab-health" role="tabpanel">
+        <div class="tab-section">
+          <div class="tab-section-title">🏥 Медичний Блокпост</div>
+          <div class="tab-section-desc">Відзнач свої медичні особливості. Продукти-тригери будуть автоматично виключені з раціону.</div>
+
+          <div class="blockpost-warning">
+            <div class="blockpost-warning-icon">🛡️</div>
+            <div class="blockpost-warning-text">
+              <strong>Безпека понад усе.</strong> Ваші дані зберігаються тільки на вашому пристрої та сервері бота. Ніколи не передаються третім особам.
+            </div>
+          </div>
+
+          <div class="conditions-list" id="conditions-list">
+            <!-- Генерується JS з бази medical_conditions.json -->
+          </div>
+
+          <button class="btn btn-gold btn-full mt-md" onclick="saveBlockpost()">
+            🛡️ Зберегти налаштування
+          </button>
+        </div>
+      </div><!-- /tab-health -->
+
+      <!-- ==================
+           TAB 4: КАРТКА КЛІЄНТА
+           ================== -->
+      <div class="tab-pane hidden" id="tab-card" role="tabpanel">
+
+        <!-- Картка клієнта -->
+        <div class="client-card-hero" id="client-card-hero">
+          <div class="client-avatar" id="client-avatar">🌿</div>
+          <div class="client-name" id="client-name">—</div>
+          <div class="client-dosha" id="client-dosha-text">Тип Доші не визначено</div>
+          <div class="client-stats">
+            <div class="client-stat">
+              <div class="client-stat-value" id="stat-age">—</div>
+              <div class="client-stat-label">Вік</div>
+            </div>
+            <div class="client-stat">
+              <div class="client-stat-value" id="stat-city">—</div>
+              <div class="client-stat-label">Місто</div>
+            </div>
+            <div class="client-stat">
+              <div class="client-stat-value" id="stat-conditions">0</div>
+              <div class="client-stat-label">Обмежень</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Плейсхолдер для Етапу 4 -->
+        <div class="placeholder-card">
+          <div class="placeholder-icon">📄</div>
+          <div class="placeholder-title">Медичні документи</div>
+          <div class="placeholder-desc">Завантаження аналізів та ШІ-розшифровка</div>
+          <div class="placeholder-badge">🔮 Версія 3.0 — скоро</div>
+        </div>
+
+        <div class="placeholder-card">
+          <div class="placeholder-icon">🤖</div>
+          <div class="placeholder-title">ШІ-Консультант</div>
+          <div class="placeholder-desc">Підбір раціону на основі медичних діагнозів</div>
+          <div class="placeholder-badge">🔮 Версія 3.0 — скоро</div>
+        </div>
+
+        <!-- Активні обмеження -->
+        <div class="tab-section" id="card-conditions-section" style="padding-top:0;">
+          <div class="section-header">
+            <div class="section-title">🏥 Активні обмеження</div>
+            <div class="section-count" id="card-conditions-count">0</div>
+          </div>
+          <div id="card-conditions-list" class="conditions-list">
+            <div style="text-align:center; padding:16px; color:var(--text-muted); font-size:13px;">
+              Медичних обмежень не вказано
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tab-card -->
+
+    </main><!-- /main-content -->
+
+    <!-- TAB BAR -->
+    <nav class="tab-bar" id="tab-bar" role="navigation" aria-label="Навігація">
+      <button class="tab-item active" id="tab-btn-ration" onclick="switchTab('ration')" aria-label="Раціон" aria-selected="true" role="tab">
+        <span class="tab-icon">🌿</span>
+        <span class="tab-label">Раціон</span>
+      </button>
+      <button class="tab-item" id="tab-btn-profile" onclick="switchTab('profile')" aria-label="Профіль" aria-selected="false" role="tab">
+        <span class="tab-icon">👤</span>
+        <span class="tab-label">Профіль</span>
+      </button>
+      <button class="tab-item" id="tab-btn-health" onclick="switchTab('health')" aria-label="Здоров'я" aria-selected="false" role="tab">
+        <span class="tab-icon">🏥</span>
+        <span class="tab-label">Здоров'я</span>
+      </button>
+      <button class="tab-item" id="tab-btn-card" onclick="switchTab('card')" aria-label="Картка" aria-selected="false" role="tab">
+        <span class="tab-icon">📋</span>
+        <span class="tab-label">Картка</span>
+      </button>
+    </nav>
+
+  </div><!-- /app -->
+
+  <!-- КВІЗ ДОШІ (Bottom Sheet) -->
+  <div class="quiz-overlay" id="quiz-overlay" role="dialog" aria-modal="true" aria-label="Визначення типу Доші">
+    <div class="quiz-sheet" id="quiz-sheet">
+      <div class="quiz-drag-handle"></div>
+      <div class="quiz-progress" id="quiz-progress">
+        <!-- Прогрес-точки -->
+      </div>
+      <div class="quiz-question-emoji" id="quiz-question-emoji">🧘</div>
+      <div class="quiz-question-text" id="quiz-question-text">Завантаження...</div>
+      <div class="quiz-options" id="quiz-options">
+        <!-- Варіанти відповідей -->
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="btn btn-outline btn-sm" onclick="quizPrev()" id="quiz-prev-btn">← Назад</button>
+        <button class="btn btn-gold" style="flex:1;" onclick="quizNext()" id="quiz-next-btn">Далі →</button>
+      </div>
+      <button class="btn btn-sm" style="width:100%;margin-top:8px;background:none;color:var(--text-muted);" onclick="closeQuiz()">
+        Скасувати
+      </button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

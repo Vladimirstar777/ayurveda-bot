@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Аюрведа CRM - Адмін Панель</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+    <!-- Екран авторизації -->
+    <div id="login-screen" class="glass-panel active">
+        <h2>👑 Адмін-доступ</h2>
+        <p>Введіть пароль для доступу до CRM</p>
+        <div class="input-group">
+            <input type="password" id="admin-password" placeholder="Пароль" inputmode="numeric">
+        </div>
+        <button id="login-btn" class="primary-btn">Увійти</button>
+        <p id="login-error" class="error-text hidden">Невірний пароль</p>
+    </div>
+
+    <!-- Головна панель (Dashboard) -->
+    <div id="dashboard-screen" class="glass-panel hidden">
+        <header class="admin-header">
+            <h2>Клієнти (CRM)</h2>
+            <button id="refresh-btn" class="icon-btn">🔄 Оновити</button>
+        </header>
+        
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-label">Всього клієнтів</span>
+                <span id="total-users" class="stat-value">0</span>
+            </div>
+        </div>
+
+        <div class="users-list" id="users-container">
+            <!-- Список користувачів завантажується сюди -->
+        </div>
+    </div>
+
+    <!-- Модальне вікно картки клієнта -->
+    <div id="user-modal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <button id="close-modal" class="close-btn">✖</button>
+            <h3 id="modal-user-name">Ім'я Клієнта</h3>
+            
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="profile">Профіль</button>
+                <button class="tab-btn" data-tab="health">Здоров'я</button>
+            </div>
+            
+            <div class="tab-content active" id="tab-profile">
+                <div class="info-row"><span class="label">ID:</span> <span id="m-id"></span></div>
+                <div class="info-row"><span class="label">Вік:</span> <span id="m-age"></span></div>
+                <div class="info-row"><span class="label">Доша:</span> <span id="m-dosha" class="dosha-badge"></span></div>
+                <div class="info-row"><span class="label">Мета:</span> <span id="m-goal"></span></div>
+                <div class="info-row"><span class="label">Створено:</span> <span id="m-created"></span></div>
+            </div>
+            
+            <div class="tab-content" id="tab-health">
+                <h4>Активні стани (Блокпост)</h4>
+                <div id="m-conditions" class="tags-container">
+                    <!-- Теги станів -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
