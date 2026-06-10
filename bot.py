@@ -336,7 +336,9 @@ async def main():
 
     # Запуск бота
     if BOT_MODE == "polling":
-        logger.info("🤖 Запуск у режимі POLLING (локальна розробка)")
+        logger.info("🤖 Запуск у режимі POLLING (обхід webhook)")
+        # Обов'язково видаляємо вебхук, якщо він був встановлений раніше
+        await bot.delete_webhook(drop_pending_updates=False)
         try:
             await dp.start_polling(bot)
         finally:
