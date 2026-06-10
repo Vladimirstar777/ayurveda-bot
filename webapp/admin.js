@@ -90,12 +90,26 @@ function renderDashboard() {
         const name = user.profile.name || `User ID: ${user.user_id}`;
         const dosha = user.profile.dosha_type || 'Не визначено';
         
+        // Визначаємо статус клієнта (mock-логіка для відображення індикатора)
+        let statusColor = 'green';
+        let statusText = 'Збалансований';
+        if (user.blockpost && user.blockpost.conditions && user.blockpost.conditions.length > 2) {
+            statusColor = 'red';
+            statusText = 'Не збалансований';
+        } else if (user.blockpost && user.blockpost.conditions && user.blockpost.conditions.length > 0) {
+            statusColor = 'orange';
+            statusText = 'Потребує уваги';
+        }
+
         card.innerHTML = `
             <div class="user-main-info">
                 <span class="user-name">${name}</span>
                 <span class="user-sub">Оновлено: ${new Date(user.updated_at).toLocaleDateString('uk-UA')}</span>
             </div>
-            <span class="dosha-badge">${dosha}</span>
+            <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                <span class="dosha-badge">${dosha}</span>
+                <span style="font-size:10px; font-weight:bold; color:${statusColor};">${statusText}</span>
+            </div>
         `;
         
         card.addEventListener('click', () => openUserModal(user));
@@ -179,10 +193,6 @@ document.getElementById('save-manage-btn').addEventListener('click', async () =>
         });
         
         if (response.ok) {
-            statusEl.innerText = '✅ Збережено успішно!';
-            statusEl.className = 'status-text success';
-            statusEl.classList.remove('hidden');
-            
             // Update local state
             const user = allUsers.find(u => u.user_id === currentUserId);
             if (user) {
@@ -190,7 +200,11 @@ document.getElementById('save-manage-btn').addEventListener('click', async () =>
                 user.manual_dosha = dosha;
             }
             
-            setTimeout(() => statusEl.classList.add('hidden'), 3000);
+            // Auto-redirect to Main Dashboard
+            userModal.classList.add('hidden');
+            renderDashboard();
+            
+            // Можна додати глобальне toast-повідомлення
         } else {
             throw new Error('Failed');
         }

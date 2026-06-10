@@ -17,8 +17,8 @@
       <div class="header-logo">
         <div class="header-logo-icon">🌿</div>
         <div>
-          <div class="header-title">Аюрведа</div>
-          <div class="header-subtitle">Радник</div>
+          <div class="header-title">KSVeda</div>
+          <div class="header-subtitle">Ecosystem 4.3</div>
         </div>
       </div>
       <div class="header-meta">
@@ -76,6 +76,19 @@
               <div class="section-title">✅ Рекомендовано</div>
               <div class="section-count" id="safe-count">0 продуктів</div>
             </div>
+            
+            <!-- 8 Tabs (2x4 grid) -->
+            <div class="categories-grid" id="product-categories">
+              <button class="category-btn active" onclick="filterCategory('Фрукти')">Фрукти</button>
+              <button class="category-btn" onclick="filterCategory('Овочі')">Овочі</button>
+              <button class="category-btn" onclick="filterCategory('Горіхи')">Горіхи</button>
+              <button class="category-btn" onclick="filterCategory('Крупи')">Крупи</button>
+              <button class="category-btn" onclick="filterCategory('Напої')">Напої</button>
+              <button class="category-btn" onclick="filterCategory('Спеції')">Спеції</button>
+              <button class="category-btn" onclick="filterCategory('Молочні')">Молочні</button>
+              <button class="category-btn" onclick="filterCategory('Інше')">Інше</button>
+            </div>
+
             <div class="products-list" id="safe-products-list">
               <!-- Картки генеруються JS -->
             </div>
@@ -287,19 +300,28 @@
           </div>
         </div>
 
-        <!-- Плейсхолдер для Етапу 4 -->
-        <div class="placeholder-card">
-          <div class="placeholder-icon">📄</div>
-          <div class="placeholder-title">Медичні документи</div>
-          <div class="placeholder-desc">Завантаження аналізів та ШІ-розшифровка</div>
-          <div class="placeholder-badge">🔮 Версія 3.0 — скоро</div>
+        <!-- Медичний Архів (Medical Vault) -->
+        <div class="tab-section" id="medical-vault-section" style="padding-top:0;">
+          <div class="section-header">
+            <div class="section-title">📁 Медичний архів</div>
+            <div class="section-count" id="vault-count">0 / 10</div>
+          </div>
+          <div class="vault-upload-area" onclick="document.getElementById('vault-file-input').click()">
+            <div class="vault-upload-icon">📤</div>
+            <div>Додати аналізи (PDF, JPEG, PNG)</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-top:4px;">До 10 файлів. ШІ автоматично розпізнає текст.</div>
+          </div>
+          <input type="file" id="vault-file-input" accept="image/jpeg, image/png, application/pdf" style="display:none;" onchange="handleVaultUpload(event)">
+          
+          <div id="vault-files-list" class="vault-files-list">
+            <div style="text-align:center; padding:16px; color:var(--text-muted); font-size:13px;">Архів порожній</div>
+          </div>
         </div>
 
         <div class="placeholder-card">
           <div class="placeholder-icon">🤖</div>
           <div class="placeholder-title">ШІ-Консультант</div>
           <div class="placeholder-desc">Підбір раціону на основі медичних діагнозів</div>
-          <div class="placeholder-badge">🔮 Версія 3.0 — скоро</div>
         </div>
 
         <!-- Активні обмеження -->
@@ -316,6 +338,28 @@
         </div>
 
       </div><!-- /tab-card -->
+
+      <!-- ==================
+           TAB 5: ГЕНЕРАТОР СТРАВ
+           ================== -->
+      <div class="tab-pane hidden" id="tab-recipe" role="tabpanel">
+        <div class="tab-section">
+          <div class="tab-section-title">🍳 Розумний Рецепт</div>
+          <div class="tab-section-desc">Генерація 3-х варіантів рецептів на основі вашого стану та медичних показників.</div>
+          
+          <button class="magic-btn" onclick="generateRecipes()" id="recipe-generate-btn">
+            <span class="magic-btn-emoji">🍲</span>
+            <div class="magic-btn-text">
+              <span class="magic-btn-main">Згенерувати страви</span>
+              <span class="magic-btn-sub">Легкі / Швидкі / Доступні</span>
+            </div>
+          </button>
+          
+          <div id="recipe-results" class="hidden mt-md">
+            <!-- Рецепти будуть тут -->
+          </div>
+        </div>
+      </div><!-- /tab-recipe -->
 
     </main><!-- /main-content -->
 
@@ -337,7 +381,34 @@
         <span class="tab-icon">📋</span>
         <span class="tab-label">Картка</span>
       </button>
+      <button class="tab-item" id="tab-btn-recipe" onclick="switchTab('recipe')" aria-label="Рецепти" aria-selected="false" role="tab">
+        <span class="tab-icon">🍲</span>
+        <span class="tab-label">Рецепти</span>
+      </button>
     </nav>
+
+    <!-- AI ASSISTANT (Плаваюча кнопка і чат) -->
+    <div id="ai-assistant-btn" class="ai-assistant-btn" onclick="toggleAssistant()">
+      <div class="ai-icon">✨</div>
+    </div>
+    
+    <div id="ai-assistant-chat" class="ai-assistant-chat hidden">
+      <div class="ai-chat-header">
+        <div class="ai-chat-title">
+          <span class="ai-icon-small">✨</span>
+          KSVeda AI Assistant
+        </div>
+        <button class="ai-close-btn" onclick="toggleAssistant()">✖</button>
+      </div>
+      <div class="ai-chat-messages" id="ai-chat-messages">
+        <!-- Повідомлення -->
+      </div>
+      <div class="ai-chat-input-area">
+        <button class="ai-panic-btn" onclick="triggerPanicMode()">Мені погано 🆘</button>
+        <input type="text" id="ai-chat-input" class="ai-input" placeholder="Запитай щось..." onkeypress="handleAiInput(event)">
+        <button class="ai-send-btn" onclick="sendAiMessage()">➤</button>
+      </div>
+    </div>
 
   </div><!-- /app -->
 

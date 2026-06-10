@@ -271,42 +271,68 @@ function updateMealPeriodCard() {
 // ДУШЕВНИЙ СТАН (Кнопки)
 // ==========================
 const SOUL_STATES = [
-  { id: 'balanced', label: 'Збалансований', emoji: '⚖️' },
+  { id: 'exhausted', label: 'Виснажений', emoji: '🪫' },
   { id: 'stress', label: 'Стрес', emoji: '😰' },
-  { id: 'fatigue', label: 'Втома', emoji: '😴' },
-  { id: 'inflammation', label: 'Жар', emoji: '🔥' },
-  { id: 'digestive_issues', label: 'Травлення', emoji: '😣' },
-  { id: 'low_immunity', label: 'Імунітет', emoji: '🛡️' },
+  { id: 'sleepy', label: 'Хочу спати', emoji: '🥱' },
+  { id: 'irritated', label: 'Роздратований', emoji: '😤' },
+  { id: 'hungry', label: 'Голодний', emoji: '🤤' },
+  { id: 'mental_fatigue', label: 'Ментальна втома', emoji: '🤯' },
+  { id: 'physical_strain', label: 'Фізичне перенапруження', emoji: '🏋️' },
+  { id: 'apathy', label: 'Апатія', emoji: '🫠' },
+  { id: 'anxiety', label: 'Неспокій', emoji: '🫣' },
+  { id: 'loss_focus', label: 'Втрата концентрації', emoji: '😵‍💫' },
+  { id: 'need_relax', label: 'Бажання розслабитися', emoji: '🧘' },
 ];
 
 function initSoulStateButtons() {
   const grid = document.getElementById('soul-state-grid');
   if (!grid) return;
+  
+  if (!State.currentSoulStates) State.currentSoulStates = [];
 
-  grid.innerHTML = SOUL_STATES.map(s => `
-    <button
-      class="soul-btn ${s.id === State.currentSoulState ? 'active' : ''}"
-      id="soul-btn-${s.id}"
-      onclick="selectSoulState('${s.id}')"
-      aria-pressed="${s.id === State.currentSoulState}"
-    >
-      <span class="soul-btn-emoji">${s.emoji}</span>
-      <span>${s.label}</span>
-    </button>
-  `).join('');
+  grid.innerHTML = SOUL_STATES.map(s => {
+    const isActive = State.currentSoulStates.includes(s.id);
+    return `
+      <button
+        class="soul-btn ${isActive ? 'active' : ''}"
+        id="soul-btn-${s.id}"
+        onclick="selectSoulState('${s.id}')"
+        aria-pressed="${isActive}"
+      >
+        <span class="soul-btn-emoji">${s.emoji}</span>
+        <span>${s.label}</span>
+      </button>
+    `;
+  }).join('');
 }
 
 function selectSoulState(stateId) {
-  State.currentSoulState = stateId;
-  document.querySelectorAll('.soul-btn').forEach(btn => {
-    btn.classList.remove('active');
-    btn.setAttribute('aria-pressed', 'false');
-  });
-  const activeBtn = document.getElementById(`soul-btn-${stateId}`);
-  if (activeBtn) {
-    activeBtn.classList.add('active');
-    activeBtn.setAttribute('aria-pressed', 'true');
+  if (!State.currentSoulStates) State.currentSoulStates = [];
+  
+  const index = State.currentSoulStates.indexOf(stateId);
+  if (index > -1) {
+    State.currentSoulStates.splice(index, 1);
+  } else {
+    if (State.currentSoulStates.length >= 3) {
+      showToast('Можна обрати не більше 3-х станів', 'info');
+      return;
+    }
+    State.currentSoulStates.push(stateId);
   }
+  
+  // Update UI manually for performance
+  const btn = document.getElementById(`soul-btn-${stateId}`);
+  if (btn) {
+    const isActive = State.currentSoulStates.includes(stateId);
+    if (isActive) {
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+    } else {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-pressed', 'false');
+    }
+  }
+
   // Скидаємо попередній раціон
   if (State.rationData) {
     hideElement('ration-result');
@@ -358,13 +384,28 @@ async function generateRation() {
 }
 
 function renderRation(data) {
-  // Рекомендовані продукти
+  // Зберігаємо поточну категорію якщо її немає
+  if (!State.currentCategory) State.currentCategory = 'Фрукти';
+  
+  // Фільтруємо рекомендовані продукти за категорією
   const safeList = document.getElementById('safe-products-list');
   const safeCount = document.getElementById('safe-count');
-  const recommended = data.recommended_products || [];
+  const allRecommended = data.recommended_products || [];
+  
+  // Якщо в продуктів немає категорії (поки що), просто показуємо всі, або фільтруємо якщо є
+  const filtered = allRecommended.filter(p => !p.category || p.category === State.currentCategory);
 
-  safeCount.textContent = `${recommended.length} продуктів`;
-  safeList.innerHTML = recommended.map(p => renderProductCard(p, false)).join('');
+  safeCount.textContent = `${filtered.length} продуктів (всього ${allRecommended.length})`;
+  safeList.innerHTML = filtered.map(p => renderProductCard(p, false)).join('');
+
+  // Оновлюємо активну кнопку категорії
+  document.querySelectorAll('.category-btn').forEach(btn => {
+    if (btn.textContent === State.currentCategory) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
 
   // Заблоковані продукти
   const blockedList = document.getElementById('blocked-products-list');
@@ -383,6 +424,18 @@ function renderRation(data) {
   // Оновлюємо підказку
   if (data.tip_uk) {
     document.getElementById('meal-period-tip').textContent = data.tip_uk;
+  }
+}
+
+function filterCategory(cat) {
+  State.currentCategory = cat;
+  if (State.rationData) {
+    renderRation(State.rationData);
+  } else {
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      if (btn.textContent === cat) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
   }
 }
 
@@ -839,6 +892,9 @@ function renderClientCard() {
 
   // Активні обмеження
   renderCardConditions();
+  
+  // Медичний Архів
+  renderVaultFiles();
 }
 
 function renderCardConditions() {
@@ -864,6 +920,63 @@ function renderCardConditions() {
         <div class="condition-name">${c.name_uk}</div>
       </div>
       <span class="status-badge status-badge-blocked">Активно</span>
+    </div>
+  `).join('');
+}
+
+// ==========================
+// МЕДИЧНИЙ АРХІВ (Medical Vault)
+// ==========================
+async function handleVaultUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const currentFiles = State.profile.vault_files || [];
+  if (currentFiles.length >= 10) {
+    showToast('❌ Досягнуто ліміт у 10 файлів', 'error');
+    return;
+  }
+
+  showToast('⏳ Завантаження та розпізнавання (OCR)...', 'info');
+  
+  // Імітація завантаження та OCR
+  setTimeout(() => {
+    const newFile = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: file.name,
+      date: new Date().toISOString(),
+      size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+      status: 'success'
+    };
+    
+    State.profile.vault_files = [...currentFiles, newFile];
+    saveToLocalStorage();
+    renderVaultFiles();
+    showToast('✅ Файл завантажено та розпізнано', 'success');
+  }, 2000);
+}
+
+function renderVaultFiles() {
+  const list = document.getElementById('vault-files-list');
+  const count = document.getElementById('vault-count');
+  if (!list) return;
+
+  const files = State.profile.vault_files || [];
+  count.textContent = `${files.length} / 10`;
+
+  if (files.length === 0) {
+    list.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:13px;">Архів порожній</div>';
+    return;
+  }
+
+  list.innerHTML = files.map(f => `
+    <div class="vault-file-item">
+      <div class="vault-file-icon">📄</div>
+      <div class="vault-file-info">
+        <div class="vault-file-name">${f.name}</div>
+        <div class="vault-file-meta">${new Date(f.date).toLocaleDateString('uk-UA')} • ${f.size}</div>
+      </div>
+      <div class="vault-file-status" style="color:var(--color-safe);">Оброблено ШІ</div>
     </div>
   `).join('');
 }
@@ -949,6 +1062,134 @@ function openQuiz() {
 function closeQuiz() {
   document.getElementById('quiz-overlay').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+// ==========================
+// ГЕНЕРАТОР СТРАВ
+// ==========================
+async function generateRecipes() {
+  const states = State.currentSoulStates || [];
+  if (states.length === 0) {
+    showToast('⚠️ Оберіть хоча б один свій стан у вкладці "Раціон"', 'error');
+    return;
+  }
+
+  const btn = document.getElementById('recipe-generate-btn');
+  const resultsContainer = document.getElementById('recipe-results');
+  
+  btn.style.opacity = '0.7';
+  btn.querySelector('.magic-btn-main').textContent = 'Генерую...';
+  
+  // Імітація роботи AI
+  setTimeout(() => {
+    btn.style.opacity = '1';
+    btn.querySelector('.magic-btn-main').textContent = 'Згенерувати страви';
+    
+    resultsContainer.innerHTML = `
+      <div class="product-card">
+        <div class="product-card-header">
+          <div class="product-emoji">🥗</div>
+          <div class="product-info">
+            <div class="product-name">Теплий салат з кіноа (Легкий)</div>
+          </div>
+        </div>
+        <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Кіноа, авокадо, оливкова олія, лимонний сік.</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Зварити кіноа (15 хв). Змішати з нарізаним авокадо. Заправити олією та лимоном.</div>
+          <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа:</strong> Чудово балансує Піту та насичує без важкості.</div>
+        </div>
+      </div>
+      
+      <div class="product-card mt-sm">
+        <div class="product-card-header">
+          <div class="product-emoji">🥣</div>
+          <div class="product-info">
+            <div class="product-name">Кічарі (Доступний)</div>
+          </div>
+        </div>
+        <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Рис басматі, маш, гхі, куркума, кумін.</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Промити рис і маш. Обсмажити спеції в гхі. Додати рис, маш та воду. Варити 20 хв.</div>
+          <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа:</strong> Балансує всі три Доші. Ідеально при стресі та втомі.</div>
+        </div>
+      </div>
+      
+      <div class="product-card mt-sm">
+        <div class="product-card-header">
+          <div class="product-emoji">🥤</div>
+          <div class="product-info">
+            <div class="product-name">Золоте молоко (Швидкий)</div>
+          </div>
+        </div>
+        <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Рослинне молоко, куркума, чорний перець, мед.</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Нагріти молоко. Додати пів чайної ложки куркуми та щіпку перцю. Додати мед за смаком.</div>
+          <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа:</strong> Знімає напругу, зігріває, покращує сон.</div>
+        </div>
+      </div>
+    `;
+    resultsContainer.classList.remove('hidden');
+    showToast('✅ Рецепти згенеровано!', 'success');
+  }, 2500);
+}
+
+// ==========================
+// AI ASSISTANT CHAT
+// ==========================
+function toggleAssistant() {
+  const chat = document.getElementById('ai-assistant-chat');
+  chat.classList.toggle('hidden');
+  
+  if (!chat.classList.contains('hidden')) {
+    // Якщо чат пустий, додаємо привітання
+    const messages = document.getElementById('ai-chat-messages');
+    if (messages.children.length === 0) {
+      const name = State.profile?.name ? State.profile.name.split(' ')[0] : 'Друже';
+      addAiMessage(`Намасте, ${name}! Я твій Аюрведичний ШІ-Асистент. Бачу твій стан та медичний архів. Чим можу допомогти сьогодні?`, 'bot');
+    }
+  }
+}
+
+function handleAiInput(e) {
+  if (e.key === 'Enter') sendAiMessage();
+}
+
+function sendAiMessage() {
+  const input = document.getElementById('ai-chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+  
+  addAiMessage(text, 'user');
+  input.value = '';
+  
+  // Імітація відповіді
+  setTimeout(() => {
+    addAiMessage(`Я проаналізував твій запит з огляду на твою Дошу. Рекомендую додати трохи тепла: випий імбирний чай.`, 'bot');
+  }, 1500);
+}
+
+function triggerPanicMode() {
+  addAiMessage("Мені погано 🆘", 'user');
+  
+  // Імітація 4-крокового плану
+  setTimeout(() => {
+    addAiMessage(`
+      Я бачу, що тобі зараз складно. Ось план з 4 кроків:
+      1. Їжа/Напій: Випий півсклянки теплої води маленькими ковтками.
+      2. Пранаяма: Зроби 5 глибоких вдихів та довгих видихів (4-7-8).
+      3. Дія: Відійди від екрану та подивись у вікно на 2 хвилини.
+      4. Ментальне: Скажи собі: "Я в безпеці, це пройде".
+    `, 'bot');
+  }, 1000);
+}
+
+function addAiMessage(text, sender) {
+  const messages = document.getElementById('ai-chat-messages');
+  const msgEl = document.createElement('div');
+  msgEl.className = `ai-message ${sender}`;
+  msgEl.innerText = text;
+  messages.appendChild(msgEl);
+  messages.scrollTop = messages.scrollHeight;
 }
 
 function renderQuizQuestion() {
