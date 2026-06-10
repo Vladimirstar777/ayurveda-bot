@@ -343,13 +343,19 @@ async def main():
             await bot.session.close()
             await runner.cleanup()
     else:
-        logger.info(f"🔗 Запуск у режимі WEBHOOK: {WEBAPP_URL}{WEBHOOK_PATH}")
-        await bot.set_webhook(
-            url=f"{WEBAPP_URL}{WEBHOOK_PATH}",
-            secret_token=WEBHOOK_SECRET,
-            allowed_updates=dp.resolve_used_update_types()
-        )
-        logger.info("Webhook handler mounted to aiohttp.")
+        webhook_url = f"{WEBAPP_URL.rstrip('/')}{WEBHOOK_PATH}"
+        logger.info(f"🔗 Запуск у режимі WEBHOOK: {webhook_url}")
+        try:
+            await bot.set_webhook(
+                url=webhook_url,
+                secret_token=WEBHOOK_SECRET,
+                allowed_updates=dp.resolve_used_update_types()
+            )
+            logger.info("Webhook handler mounted to aiohttp.")
+        except Exception as e:
+            logger.error(f"❌ ПОМИЛКА ВСТАНОВЛЕННЯ WEBHOOK: {e}")
+            logger.error("Перевірте змінну WEBAPP_URL. Вона повинна починатися з https://")
+            
         # Тримаємо сервер активним
         await asyncio.Event().wait()
 
