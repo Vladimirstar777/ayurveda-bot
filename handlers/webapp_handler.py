@@ -54,7 +54,7 @@ async def _handle_save_profile(message: Message, user_id: int, data: dict):
     """Зберігає профіль користувача"""
     profile_data = data.get("profile", {})
     storage = get_user_storage(user_id)
-    success = storage.save_profile(profile_data)
+    success = await storage.save_profile(profile_data)
 
     if success:
         name = profile_data.get("name", "")
@@ -77,7 +77,7 @@ async def _handle_save_blockpost(message: Message, user_id: int, data: dict):
     """Зберігає медичні прапорці"""
     conditions = data.get("conditions", [])
     storage = get_user_storage(user_id)
-    success = storage.save_blockpost(conditions)
+    success = await storage.save_blockpost(conditions)
 
     if success:
         if conditions:

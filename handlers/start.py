@@ -48,8 +48,8 @@ async def cmd_start(message: Message):
 
     # Перевіряємо чи є вже профіль
     storage = get_user_storage(user_id)
-    has_profile = storage.exists()
-    profile = storage.load_profile() if has_profile else {}
+    has_profile = await storage.exists()
+    profile = await storage.load_profile() if has_profile else {}
 
     # Формуємо вітальне повідомлення
     if has_profile and profile.get("name"):
