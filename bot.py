@@ -16,6 +16,7 @@ from urllib.parse import parse_qs, unquote
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 from aiohttp import web
 from loguru import logger
 
@@ -231,7 +232,7 @@ async def api_admin_users(request: web.Request) -> web.Response:
     return web.json_response({"users": users})
 
 
-def create_web_app() -> web.Application:
+def create_web_app(bot: Bot = None, dp: Dispatcher = None) -> web.Application:
     """Створює aiohttp додаток з усіма маршрутами"""
     app = web.Application(middlewares=[cors_middleware])
 
@@ -251,6 +252,16 @@ def create_web_app() -> web.Application:
 
     # Health check для Render.com
     app.router.add_get("/health", lambda r: web.json_response({"status": "ok"}))
+
+    # Webhook Route (якщо передано bot і dp)
+    if bot and dp:
+        webhook_requests_handler = SimpleRequestHandler(
+            dispatcher=dp,
+            bot=bot,
+            secret_token=WEBHOOK_SECRET,
+        )
+        webhook_requests_handler.register(app, path=WEBHOOK_PATH)
+        setup_application(app, dp, bot=bot)
 
     return app
 
@@ -292,7 +303,7 @@ async def main():
     await init_db()
 
     # HTTP сервер
-    web_app = create_web_app()
+    web_app = create_web_app(bot=bot, dp=dp)
     runner = web.AppRunner(web_app)
     await runner.setup()
     site = web.TCPSite(runner, HOST, PORT)
@@ -311,9 +322,10 @@ async def main():
         logger.info(f"🔗 Запуск у режимі WEBHOOK: {WEBAPP_URL}{WEBHOOK_PATH}")
         await bot.set_webhook(
             url=f"{WEBAPP_URL}{WEBHOOK_PATH}",
-            secret_token=WEBHOOK_SECRET
+            secret_token=WEBHOOK_SECRET,
+            allowed_updates=dp.resolve_used_update_types()
         )
-        # Webhook обробник вже інтегрований через aiogram
+        logger.info("Webhook handler mounted to aiohttp.")
         # Тримаємо сервер активним
         await asyncio.Event().wait()
 
