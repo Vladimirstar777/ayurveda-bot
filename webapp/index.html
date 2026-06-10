@@ -378,13 +378,22 @@
           <div class="tab-section-title">🍳 Розумний Рецепт</div>
           <div class="tab-section-desc">Генерація 3-х варіантів рецептів на основі вашого стану та медичних показників.</div>
           
-          <button class="magic-btn" onclick="generateRecipes()" id="recipe-generate-btn">
-            <span class="magic-btn-emoji">🍲</span>
-            <div class="magic-btn-text">
-              <span class="magic-btn-main">Згенерувати страви</span>
-              <span class="magic-btn-sub">Легкі / Швидкі / Доступні</span>
-            </div>
-          </button>
+          <div style="display:flex; gap:8px; width:100%;">
+            <button class="magic-btn" onclick="generateRecipes('normal')" id="recipe-generate-btn" style="flex:1;">
+              <span class="magic-btn-emoji">🍲</span>
+              <div class="magic-btn-text">
+                <span class="magic-btn-main">Згенерувати страви</span>
+                <span class="magic-btn-sub">Локальні продукти</span>
+              </div>
+            </button>
+            <button class="magic-btn" onclick="generateRecipes('bachelor')" id="recipe-bachelor-btn" style="flex:1; background:linear-gradient(135deg, #1f2937, #374151); border-color:#4b5563;">
+              <span class="magic-btn-emoji">🍳</span>
+              <div class="magic-btn-text">
+                <span class="magic-btn-main">Для Холостяка</span>
+                <span class="magic-btn-sub">Швидко з того, що є</span>
+              </div>
+            </button>
+          </div>
           
           <div id="recipe-results" class="hidden mt-md">
             <!-- Рецепти будуть тут -->

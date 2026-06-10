@@ -1101,86 +1101,130 @@ function closeQuiz() {
 // ==========================
 // ГЕНЕРАТОР СТРАВ
 // ==========================
-async function generateRecipes() {
+async function generateRecipes(mode = 'normal') {
   const states = State.currentSoulStates || [];
   if (states.length === 0) {
     showToast('⚠️ Оберіть хоча б один свій стан у вкладці "Раціон"', 'error');
     return;
   }
 
-  const btn = document.getElementById('recipe-generate-btn');
+  const btnNormal = document.getElementById('recipe-generate-btn');
+  const btnBachelor = document.getElementById('recipe-bachelor-btn');
   const resultsContainer = document.getElementById('recipe-results');
   
-  btn.style.opacity = '0.7';
-  btn.querySelector('.magic-btn-main').textContent = 'Генерую...';
+  const activeBtn = mode === 'bachelor' ? btnBachelor : btnNormal;
+  const originalText = activeBtn.querySelector('.magic-btn-main').textContent;
   
-  // Імітація роботи AI
+  activeBtn.style.opacity = '0.7';
+  activeBtn.querySelector('.magic-btn-main').textContent = 'Генерую...';
+  
+  // Доша для персоналізації
+  const dosha = State.profile?.dosha_type || 'vata';
+  
+  // Імітація розумної генерації
   setTimeout(() => {
-    btn.style.opacity = '1';
-    btn.querySelector('.magic-btn-main').textContent = 'Згенерувати страви';
+    activeBtn.style.opacity = '1';
+    activeBtn.querySelector('.magic-btn-main').textContent = originalText;
     
-    resultsContainer.innerHTML = `
-      <div class="product-card">
-        <div class="product-card-header">
-          <div class="product-emoji">🥗</div>
-          <div class="product-info">
-            <div class="product-name">Теплий салат з кіноа (Легкий)</div>
+    let htmlContent = '';
+    
+    if (mode === 'bachelor') {
+      // Режим Холостяка (з того, що є)
+      htmlContent = `
+        <div class="product-card">
+          <div class="product-card-header">
+            <div class="product-emoji">🍳</div>
+            <div class="product-info">
+              <div class="product-name">Сковорода-рятівниця (Холостяк)</div>
+            </div>
+          </div>
+          <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти (з АТБ/Сільпо):</strong> 3 яйця, 1 помідор, пів огірка, оливкова олія, кріп, дрібка чорного перцю.</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Нарізати помідор, злегка припустити на олії. Вбити яйця. Зверху покришити кріп та огірок вприкуску. (5 хв)</div>
+            <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа (${dosha}):</strong> ${dosha === 'pitta' ? 'Яйця трохи гріють, але свіжий огірок і кріп ідеально збалансують вогонь Піти.' : 'Тепла, масляниста страва відмінно заспокоює Вату та насичує Капху без важкості.'}</div>
           </div>
         </div>
-        <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Кіноа, авокадо, оливкова олія, лимонний сік.</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Зварити кіноа (15 хв). Змішати з нарізаним авокадо. Заправити олією та лимоном.</div>
-          <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа:</strong> Чудово балансує Піту та насичує без важкості.</div>
-        </div>
-      </div>
-      
-      <div class="product-card mt-sm">
-        <div class="product-card-header">
-          <div class="product-emoji">🥣</div>
-          <div class="product-info">
-            <div class="product-name">Кічарі (Доступний)</div>
+        
+        <div class="product-card mt-sm">
+          <div class="product-card-header">
+            <div class="product-emoji">🍝</div>
+            <div class="product-info">
+              <div class="product-name">Швидка Паста з Овочами</div>
+            </div>
+          </div>
+          <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Макарони (тверді сорти), масло/олія, зубчик часнику, сир (будь-який твердий), свіжа зелень.</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Відварити макарони. Розігріти олію з роздавленим часником (потім дістати його), перемішати з пастою, посипати сиром.</div>
+            <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа (${dosha}):</strong> ${dosha === 'kapha' ? 'Додайте більше чорного перцю для розпалювання вогню травлення.' : 'Достатньо поживно, щоб відновити сили після робочого дня.'}</div>
           </div>
         </div>
-        <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Рис басматі, маш, гхі, куркума, кумін.</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Промити рис і маш. Обсмажити спеції в гхі. Додати рис, маш та воду. Варити 20 хв.</div>
-          <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа:</strong> Балансує всі три Доші. Ідеально при стресі та втомі.</div>
-        </div>
-      </div>
-      
-      <div class="product-card mt-sm">
-        <div class="product-card-header">
-          <div class="product-emoji">🥤</div>
-          <div class="product-info">
-            <div class="product-name">Золоте молоко (Швидкий)</div>
+      `;
+    } else {
+      // Нормальний режим (Локалізована Аюрведа)
+      htmlContent = `
+        <div class="product-card">
+          <div class="product-card-header">
+            <div class="product-emoji">🥣</div>
+            <div class="product-info">
+              <div class="product-name">Українське Кічарі (Локалізовано)</div>
+            </div>
+          </div>
+          <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Гречка (оригінал: рис басматі), Сочевиця (оригінал: маш), Вершкове масло (оригінал: гхі), морква, куркума.</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Промити гречку та сочевицю. Обсмажити натерті овочі з куркумою в маслі. Змішати, залити водою, варити 20 хв.</div>
+            <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа (${dosha}):</strong> Найкращий детокс. Гречка краще підходить для нашого клімату, а куркума знімає запалення.</div>
           </div>
         </div>
-        <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Рослинне молоко, куркума, чорний перець, мед.</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Нагріти молоко. Додати пів чайної ложки куркуми та щіпку перцю. Додати мед за смаком.</div>
-          <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа:</strong> Знімає напругу, зігріває, покращує сон.</div>
+        
+        <div class="product-card mt-sm">
+          <div class="product-card-header">
+            <div class="product-emoji">🥗</div>
+            <div class="product-info">
+              <div class="product-name">Теплий салат з гарбузом</div>
+            </div>
+          </div>
+          <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Запечений гарбуз, волоські горіхи, оливкова олія (оригінал: кунжутна), листовий салат.</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Нарізати кубиками гарбуз, запекти (15 хв). Змішати з салатом, посипати горіхами, заправити олією.</div>
+            <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа (${dosha}):</strong> ${dosha === 'vata' ? 'Теплий солодкуватий гарбуз — ідеальні ліки для заспокоєння нервової Вати.' : 'Легка та поживна вечеря, що не навантажує шлунок перед сном.'}</div>
+          </div>
         </div>
-      </div>
-    `;
+        
+        <div class="product-card mt-sm">
+          <div class="product-card-header">
+            <div class="product-emoji">☕</div>
+            <div class="product-info">
+              <div class="product-name">Адаптогенний Напій</div>
+            </div>
+          </div>
+          <div class="product-card-body-inner" style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:0;">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Інгредієнти:</strong> Відвар шипшини (оригінал: трифала), мед, кориця.</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;"><strong>Приготування:</strong> Заварити шипшину в термосі. Перед вживанням додати дрібку кориці та ложку меду (в теплу, не гарячу воду).</div>
+            <div style="font-size:12px; color:var(--gold-primary);"><strong>Аюрведа (${dosha}):</strong> Локальна заміна традиційним аюрведичним травам. Дає потужний вітамін С та знімає втому.</div>
+          </div>
+        </div>
+      `;
+    }
+    
+    resultsContainer.innerHTML = htmlContent;
     resultsContainer.classList.remove('hidden');
-    showToast('✅ Рецепти згенеровано!', 'success');
-  }, 2500);
+    showToast(`✅ Рецепти (${mode === 'bachelor' ? 'Холостяк' : 'Локальні'}) згенеровано!`, 'success');
+  }, 1500);
 }
 
 // ==========================
 // AI ASSISTANT CHAT
 // ==========================
+if (!State.aiHistory) State.aiHistory = [];
+
 function toggleAssistant() {
   const chat = document.getElementById('ai-assistant-chat');
   chat.classList.toggle('hidden');
   
-  if (!chat.classList.contains('hidden')) {
-    // Якщо чат пустий, додаємо привітання
-    const messages = document.getElementById('ai-chat-messages');
-    if (messages.children.length === 0) {
-      const name = State.profile?.name ? State.profile.name.split(' ')[0] : 'Друже';
-      addAiMessage(`Намасте, ${name}! Я твій Аюрведичний ШІ-Асистент. Бачу твій стан та медичний архів. Чим можу допомогти сьогодні?`, 'bot');
-    }
+  if (!chat.classList.contains('hidden') && State.aiHistory.length === 0) {
+    const name = State.profile?.name ? State.profile.name.split(' ')[0] : 'Друже';
+    const msg = `Намасте, ${name}! Я твій Аюрведичний ШІ-Асистент. Бачу твій стан та медичний архів. Чим можу допомогти сьогодні?`;
+    addAiMessage(msg, 'bot');
   }
 }
 
@@ -1196,28 +1240,66 @@ function sendAiMessage() {
   addAiMessage(text, 'user');
   input.value = '';
   
-  // Імітація відповіді
+  const lowerText = text.toLowerCase();
+  
+  // 1. Патерн: Час
+  if (lowerText.includes('котра година') || lowerText.includes('час') || lowerText.includes('година')) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+    setTimeout(() => addAiMessage(`Зараз ${timeStr}. Згідно з Аюрведою, зараз ідеальний час для ${now.getHours() < 12 ? 'активності та ранкової рутини' : (now.getHours() < 18 ? 'роботи та ситного обіду' : 'відпочинку та легкої вечері')}.`, 'bot'), 600);
+    return;
+  }
+  
+  // 2. Патерн: Як справи
+  if (lowerText.includes('як справи') || lowerText.includes('як ти')) {
+    setTimeout(() => addAiMessage('У мене все круто! Мої сервери заряджені праною, і я готовий працювати з тобою скільки завгодно. А як твій настрій?', 'bot'), 600);
+    return;
+  }
+  
+  // 3. Патерн: Пока
+  if (lowerText.includes('пока') || lowerText.includes('бувай') || lowerText.includes('до побачення') || lowerText.includes('до зустрічі')) {
+    setTimeout(() => addAiMessage('Спасибі, що звернувся. Бережи себе та залишайся в балансі! Намасте 🙏', 'bot'), 600);
+    return;
+  }
+  
+  // 4. Патерн: Мені погано
+  if (lowerText.includes('погано') || lowerText.includes('болить') || lowerText.includes('тривога')) {
+    setTimeout(() => triggerPanicMode(false), 600);
+    return;
+  }
+  
+  // 5. Контекстна пам'ять (останні повідомлення)
+  let contextReply = '';
+  const lastUserMsg = State.aiHistory.slice(-3, -1).find(m => m.role === 'user');
+  
+  if (lastUserMsg) {
+    contextReply = `Зважаючи на те, що ти раніше писав "${lastUserMsg.text.substring(0, 20)}...", я б порадив тобі дотримуватися спокою. `;
+  }
+  
   setTimeout(() => {
-    addAiMessage(`Я проаналізував твій запит з огляду на твою Дошу. Рекомендую додати трохи тепла: випий імбирний чай.`, 'bot');
-  }, 1500);
+    addAiMessage(`${contextReply}Я проаналізував твій запит з огляду на твою Дошу (${State.profile?.dosha_type || 'Вата'}). Рекомендую зараз звернути увагу на теплі напої та відпочинок.`, 'bot');
+  }, 1000);
 }
 
-function triggerPanicMode() {
-  addAiMessage("Мені погано 🆘", 'user');
+function triggerPanicMode(addUserMessage = true) {
+  if (addUserMessage) {
+    addAiMessage("Мені погано 🆘", 'user');
+  }
   
-  // Імітація 4-крокового плану
   setTimeout(() => {
     addAiMessage(`
       Я бачу, що тобі зараз складно. Ось план з 4 кроків:
       1. Їжа/Напій: Випий півсклянки теплої води маленькими ковтками.
-      2. Пранаяма: Зроби 5 глибоких вдихів та довгих видихів (4-7-8).
+      2. Пранаяма: Натисни кнопку "🧘 Пранаяма" вище і подихай зі мною.
       3. Дія: Відійди від екрану та подивись у вікно на 2 хвилини.
-      4. Ментальне: Скажи собі: "Я в безпеці, це пройде".
+      4. Ментальне: Скажи собі: "Я в безпеці, це стан тіла, він мине".
     `, 'bot');
-  }, 1000);
+  }, 800);
 }
 
 function addAiMessage(text, sender) {
+  State.aiHistory.push({ role: sender, text: text });
+  
   const messages = document.getElementById('ai-chat-messages');
   const msgEl = document.createElement('div');
   msgEl.className = `ai-message ${sender}`;
