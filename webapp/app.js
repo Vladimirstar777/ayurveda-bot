@@ -122,6 +122,7 @@ async function init() {
   initSoulStateButtons();
   initDatePicker();
   await loadInitData();
+  restoreHabitsUI();
   updateUI();
 }
 
@@ -182,6 +183,39 @@ const FALLBACK_CONDITIONS = [
   { id: 'lactose', name_uk: 'Непереносимість лактози', icon: '🟡', description_uk: 'Нездатність перетравлювати лактозу' },
   { id: 'gluten', name_uk: 'Целіакія або непереносимість глютену', icon: '🟡', description_uk: 'Реакція на білок глютену' },
 ];
+
+// ==========================
+// ЛОГІКА "WELCOME BACK" & АКТИВНОСТІ
+// ==========================
+function checkLastActive() {
+  const lastActive = localStorage.getItem('lastActiveTimestamp');
+  const now = Date.now();
+  const EIGHT_HOURS = 8 * 60 * 60 * 1000;
+  
+  if (lastActive && (now - parseInt(lastActive)) > EIGHT_HOURS) {
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('welcome-back-screen').classList.remove('hidden');
+    return true; // Користувач повернувся після тривалої перерви
+  }
+  
+  // Оновлюємо час
+  localStorage.setItem('lastActiveTimestamp', now.toString());
+  return false;
+}
+
+function resumeApp() {
+  localStorage.setItem('lastActiveTimestamp', Date.now().toString());
+  document.getElementById('welcome-back-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  
+  // Запускаємо легку анімацію появи
+  document.getElementById('app').style.animation = 'fadeIn 0.5s ease-in-out';
+}
+
+// Оновлюємо активність при кліках
+document.addEventListener('click', () => {
+  localStorage.setItem('lastActiveTimestamp', Date.now().toString());
+});
 
 // ==========================
 // ОНОВЛЕННЯ UI
@@ -1190,6 +1224,88 @@ function addAiMessage(text, sender) {
   msgEl.innerText = text;
   messages.appendChild(msgEl);
   messages.scrollTop = messages.scrollHeight;
+}
+
+// ==========================
+// ДИНАЧАР'Я (ЗВИЧКИ)
+// ==========================
+function toggleHabit(habitId) {
+  if (!State.profile.habits) State.profile.habits = {};
+  
+  const checkbox = document.getElementById(`habit-${habitId}`);
+  State.profile.habits[habitId] = checkbox.checked;
+  saveToLocalStorage();
+  
+  if (checkbox.checked) {
+    showToast('Звичка виконана! ✅', 'success');
+  }
+}
+
+function restoreHabitsUI() {
+  if (!State.profile.habits) return;
+  
+  const water = document.getElementById('habit-water');
+  const tongue = document.getElementById('habit-tongue');
+  const meditation = document.getElementById('habit-meditation');
+  
+  if (water) water.checked = !!State.profile.habits['water'];
+  if (tongue) tongue.checked = !!State.profile.habits['tongue'];
+  if (meditation) meditation.checked = !!State.profile.habits['meditation'];
+}
+
+// ==========================
+// ПРАНАЯМА (Дихальний тренажер)
+// ==========================
+let pranayamaInterval = null;
+
+function startPranayama() {
+  const ui = document.getElementById('pranayama-ui');
+  const circle = document.getElementById('pranayama-circle');
+  const btnGroup = document.getElementById('ai-input-group');
+  
+  ui.classList.remove('hidden');
+  if (btnGroup) btnGroup.classList.add('hidden');
+  
+  addAiMessage('Запускаємо Пранаяму 4-7-8. Дихай разом зі мною.', 'bot');
+  
+  let phase = 0; // 0=Вдих(4с), 1=Затримка(7с), 2=Видих(8с)
+  
+  circle.style.transition = 'transform 4s ease-in-out';
+  circle.style.transform = 'scale(1.5)';
+  circle.innerText = 'Вдих...';
+  
+  pranayamaInterval = setInterval(() => {
+    phase = (phase + 1) % 3;
+    
+    if (phase === 0) {
+      circle.style.transition = 'transform 4s ease-in-out';
+      circle.style.transform = 'scale(1.5)';
+      circle.style.background = 'rgba(76, 175, 80, 0.2)';
+      circle.innerText = 'Вдих...';
+    } else if (phase === 1) {
+      circle.style.transition = 'none';
+      circle.style.transform = 'scale(1.5)';
+      circle.style.background = 'rgba(255, 152, 0, 0.2)';
+      circle.innerText = 'Затримка...';
+    } else if (phase === 2) {
+      circle.style.transition = 'transform 8s ease-in-out';
+      circle.style.transform = 'scale(1)';
+      circle.style.background = 'rgba(33, 150, 243, 0.2)';
+      circle.innerText = 'Видих...';
+    }
+  }, phase === 0 ? 4000 : (phase === 1 ? 7000 : 8000));
+}
+
+function stopPranayama() {
+  if (pranayamaInterval) clearInterval(pranayamaInterval);
+  
+  document.getElementById('pranayama-ui').classList.add('hidden');
+  document.getElementById('ai-input-group').classList.remove('hidden');
+  
+  const circle = document.getElementById('pranayama-circle');
+  circle.style.transform = 'scale(1)';
+  
+  addAiMessage('Ти молодець! Сподіваюсь, тобі стало краще.', 'bot');
 }
 
 function renderQuizQuestion() {

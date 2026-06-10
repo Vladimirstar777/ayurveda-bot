@@ -10,8 +10,17 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-  <div class="app" id="app">
+  <!-- WELCOME BACK ЕКРАН -->
+  <div id="welcome-back-screen" class="glass-panel hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; background:var(--bg-main);">
+    <div style="text-align:center; padding:20px;">
+      <div style="font-size:48px; margin-bottom:16px;">🙏</div>
+      <h2 style="color:var(--gold-primary); margin-bottom:12px;">З поверненням!</h2>
+      <p style="color:var(--text-muted); margin-bottom:24px; font-size:14px;">Раді бачити вас знову. Продовжимо турботу про здоров'я?</p>
+      <button class="primary-btn" onclick="resumeApp()">Продовжити</button>
+    </div>
+  </div>
 
+  <div class="app" id="app">
     <!-- HEADER -->
     <header class="app-header" id="app-header">
       <div class="header-logo">
@@ -25,6 +34,7 @@
         <div class="header-time" id="header-time">--:--</div>
         <div class="header-dosha-badge dosha-badge-none" id="header-dosha-badge">Доша не визначена</div>
       </div>
+      <div class="loader" id="loader"></div>
     </header>
 
     <!-- TOAST CONTAINER -->
@@ -37,6 +47,27 @@
            TAB 1: РАЦІОН
            ================== -->
       <div class="tab-pane" id="tab-ration" role="tabpanel">
+
+        <!-- ДИНАЧАР'Я (ТРЕКЕР ЗВИЧОК) -->
+        <div class="tab-section mb-md">
+          <div class="section-header">
+            <div class="section-title">🌅 Диначар'я (Трекер Звичок)</div>
+          </div>
+          <div class="habits-list" id="habits-container">
+            <label class="habit-item">
+              <input type="checkbox" id="habit-water" onchange="toggleHabit('water')">
+              <span class="habit-text">Склянка теплої води вранці</span>
+            </label>
+            <label class="habit-item">
+              <input type="checkbox" id="habit-tongue" onchange="toggleHabit('tongue')">
+              <span class="habit-text">Очищення язика (скребок)</span>
+            </label>
+            <label class="habit-item">
+              <input type="checkbox" id="habit-meditation" onchange="toggleHabit('meditation')">
+              <span class="habit-text">5 хвилин пранаями/медитації</span>
+            </label>
+          </div>
+        </div>
 
         <!-- Поточний прийом їжі -->
         <div class="meal-period-card" id="meal-period-card">
@@ -404,9 +435,19 @@
         <!-- Повідомлення -->
       </div>
       <div class="ai-chat-input-area">
-        <button class="ai-panic-btn" onclick="triggerPanicMode()">Мені погано 🆘</button>
-        <input type="text" id="ai-chat-input" class="ai-input" placeholder="Запитай щось..." onkeypress="handleAiInput(event)">
-        <button class="ai-send-btn" onclick="sendAiMessage()">➤</button>
+        <button class="ai-panic-btn mb-sm" onclick="triggerPanicMode()" style="width:calc(50% - 4px);">🆘 Мені погано</button>
+        <button class="ai-panic-btn mb-sm" onclick="startPranayama()" style="width:calc(50% - 4px); background:rgba(76, 175, 80, 0.1); color:var(--color-safe); border-color:rgba(76, 175, 80, 0.3);">🧘 Пранаяма</button>
+        
+        <!-- PRANAYAMA UI -->
+        <div id="pranayama-ui" class="hidden" style="width:100%; text-align:center; padding:10px 0;">
+          <div class="pranayama-circle" id="pranayama-circle">Вдих</div>
+          <button class="ai-panic-btn mt-sm" onclick="stopPranayama()" style="width:100%; background:rgba(255,255,255,0.1); color:var(--text-primary);">Зупинити</button>
+        </div>
+        
+        <div style="display:flex; width:100%; gap:8px;" id="ai-input-group">
+          <input type="text" id="ai-chat-input" class="ai-input" placeholder="Запитай щось..." onkeypress="handleAiInput(event)">
+          <button class="ai-send-btn" onclick="sendAiMessage()">➤</button>
+        </div>
       </div>
     </div>
 
