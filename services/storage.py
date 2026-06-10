@@ -80,14 +80,20 @@ class UserStorage:
         return {}
 
     async def save_profile(self, data: dict) -> bool:
-        """Зберігає профіль користувача"""
+        """Зберігає профіль користувача (MERGE з існуючим)"""
         try:
+            # 1. Завантажуємо існуючий профіль
+            existing = await self.load_profile()
+            
+            # 2. Оновлюємо його новими даними
+            existing.update(data)
+            
             now = datetime.now().isoformat()
-            data["updated_at"] = now
-            if "created_at" not in data:
-                data["created_at"] = now
+            existing["updated_at"] = now
+            if "created_at" not in existing:
+                existing["created_at"] = now
                 
-            json_data = json.dumps(data, ensure_ascii=False)
+            json_data = json.dumps(existing, ensure_ascii=False)
             
             async with aiosqlite.connect(DB_FILE) as db:
                 await self._ensure_user_exists(db)

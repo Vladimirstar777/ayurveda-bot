@@ -615,6 +615,53 @@ function switchTab(tabName, addToHistory = true) {
   if (tabName === 'health') renderConditionsList();
   if (tabName === 'card') renderClientCard();
   if (tabName === 'profile') fillProfileForm();
+  if (tabName === 'diary') renderDiary();
+}
+
+// ==========================
+// ЩОДЕННИК (DIARY)
+// ==========================
+function renderDiary() {
+  const container = document.getElementById('diary-list');
+  if (!container) return;
+  
+  const diary = State.profile?.diary || [];
+  
+  if (diary.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:16px;font-size:12px;">Ще немає записів</div>';
+    return;
+  }
+  
+  // Сортуємо від найновіших
+  const sorted = [...diary].sort((a,b) => b.timestamp - a.timestamp);
+  
+  container.innerHTML = sorted.map(item => {
+    const date = new Date(item.timestamp);
+    const timeStr = date.toLocaleString('uk-UA', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    return `
+      <div class="product-card mb-sm" style="display:flex; align-items:center; gap:12px;">
+        <div style="font-size:24px;">${item.emoji}</div>
+        <div style="flex:1;">
+          <div style="font-weight:bold; font-size:14px;">${item.name}</div>
+          <div style="font-size:11px; color:var(--text-muted);">${timeStr}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function addToDiary(name, emoji) {
+  if (!State.profile.diary) State.profile.diary = [];
+  State.profile.diary.push({ name, emoji, timestamp: Date.now() });
+  
+  // Зберігаємо змінений профіль (на сервері відбудеться merge)
+  await apiRequest('/api/profile', 'POST', { diary: State.profile.diary }).catch(() => {});
+  saveToLocalStorage();
+  
+  showToast(`✅ "${name}" додано до щоденника!`, 'success');
+  
+  // Якщо ми знаходимось на вкладці щоденника - оновлюємо
+  if (State.currentTab === 'diary') renderDiary();
 }
 
 // ==========================
@@ -713,6 +760,7 @@ async function saveProfile(event) {
   };
 
   const btn = document.getElementById('save-profile-btn');
+  const originalText = btn ? btn.innerHTML : '';
   if (btn) btn.textContent = '⏳ Зберігаємо...';
 
   try {
@@ -721,16 +769,29 @@ async function saveProfile(event) {
     State.currentDosha = dosha || null;
     saveToLocalStorage();
     updateHeader();
-    showToast('✅ Профіль збережено!', 'success');
+    
+    if (btn) {
+      btn.style.background = 'var(--color-safe)';
+      btn.textContent = '✅ ЗБЕРЕЖЕНО!';
+      setTimeout(() => {
+        btn.style.background = '';
+        btn.innerHTML = originalText;
+      }, 3000);
+    }
   } catch (err) {
     // Зберігаємо локально навіть якщо сервер недоступний
     State.profile = { ...State.profile, ...profileData };
     State.currentDosha = dosha || null;
     saveToLocalStorage();
     updateHeader();
-    showToast('💾 Збережено локально', 'info');
-  } finally {
-    if (btn) btn.textContent = '💾 Зберегти профіль';
+    if (btn) {
+      btn.style.background = 'var(--color-safe)';
+      btn.textContent = '✅ ЗБЕРЕЖЕНО! (Локально)';
+      setTimeout(() => {
+        btn.style.background = '';
+        btn.innerHTML = originalText;
+      }, 3000);
+    }
   }
 }
 
@@ -963,17 +1024,36 @@ document.addEventListener('click', (e) => {
 });
 
 async function saveBlockpost() {
+  const btn = document.querySelector('#tab-health button.btn-full') || document.querySelector('#tab-health .btn-gold');
+  const originalText = btn ? btn.innerHTML : '';
+  if (btn) btn.textContent = '⏳ Зберігаємо...';
+
   try {
     await apiRequest('/api/blockpost', 'POST', { conditions: State.blockpost.conditions });
     saveToLocalStorage();
-    showToast(`🛡️ Збережено ${State.blockpost.conditions.length} обмежень`, 'success');
+    
+    if (btn) {
+      btn.style.background = 'var(--color-safe)';
+      btn.textContent = '✅ ЗБЕРЕЖЕНО!';
+      setTimeout(() => {
+        btn.style.background = '';
+        btn.innerHTML = originalText;
+      }, 3000);
+    }
     // Скидаємо раціон бо змінились обмеження
     State.rationData = null;
     hideElement('ration-result');
     showElement('ration-empty');
   } catch (err) {
     saveToLocalStorage();
-    showToast('💾 Збережено локально', 'info');
+    if (btn) {
+      btn.style.background = 'var(--color-safe)';
+      btn.textContent = '✅ ЗБЕРЕЖЕНО! (Локально)';
+      setTimeout(() => {
+        btn.style.background = '';
+        btn.innerHTML = originalText;
+      }, 3000);
+    }
   }
 }
 
@@ -1192,35 +1272,66 @@ function selectMealTime(time) {
 }
 
 // ==========================
-// ГЕНЕРАТОР СТРАВ (Рандомізована база)
+// ГЕНЕРАТОР СТРАВ (Смарт-Конструктор 1000+ варіантів)
 // ==========================
-const RECIPE_DB = {
-  breakfast: [
-    { name: "Сирники без цукру", emoji: "🥞", ingredients: "Сир (5%), яйце, рисове/вівсяне борошно, банан (замість цукру).", recipe: "Змішати, сформувати сирники, підсмажити на краплі олії або запекти.", dosha: { pitta: "Охолоджуюча дія сиру чудово заспокоює Пітту.", vata: "Тепла ситна страва ідеальна для Вати.", kapha: "Вживати не частіше 2 разів на тиждень, уникати сметани." } },
-    { name: "Тепла Вівсянка з яблуком", emoji: "🥣", ingredients: "Вівсянка плющена, яблуко, кориця, горіхи.", recipe: "Зварити вівсянку. Яблуко злегка припустити на пательні з корицею. Посипати горіхами.", dosha: { pitta: "Відмовтеся від кориці (розігріває), замініть на кардамон.", vata: "Ідеальний теплий сніданок. Додайте трохи вершкового масла.", kapha: "Дуже добре, особливо якщо яблука запечені." } },
-    { name: "Яєчня зі шпинатом", emoji: "🍳", ingredients: "2 яйця, жменя шпинату (можна замороженого), зелень.", recipe: "Злегка підсмажити шпинат, вбити яйця, перемішати (скрембл).", dosha: { pitta: "Слідкуйте, щоб не пересмажити олію.", vata: "Додайте ложку олії для зволоження.", kapha: "Чудовий сніданок для схуднення та бадьорості." } },
-    { name: "Ліниві вареники", emoji: "🥟", ingredients: "Сир, яйце, трохи борошна.", recipe: "Замісити тісто, нарізати шматочками, кинути в окріп на 3 хв.", dosha: { pitta: "Чудовий сніданок.", vata: "Додайте трохи масла.", kapha: "Вживати помірно." } }
-  ],
-  lunch: [
-    { name: "Гречка з печеними овочами", emoji: "🍲", ingredients: "Гречка, морква, буряк, гарбуз або кабачок, оливкова олія.", recipe: "Гречку відварити. Овочі нарізати кубиками і запекти в духовці з травами.", dosha: { pitta: "Ідеально охолоджує і заземлює.", vata: "Додайте більше олії до гречки, щоб уникнути сухості.", kapha: "Чудово підходить, можна додати більше спецій." } },
-    { name: "Суп-пюре з сочевиці", emoji: "🥣", ingredients: "Червона сочевиця, морква, цибуля, куркума.", recipe: "Зварити сочевицю з овочами до м'якості, перебити блендером. Додати куркуму.", dosha: { pitta: "Сочевиця може сушити, додайте кінзу.", vata: "Добре розварюйте сочевицю і додайте масло.", kapha: "Ідеальна страва, стимулює метаболізм." } },
-    { name: "Борщ (Легкий вегетаріанський)", emoji: "🥘", ingredients: "Буряк, капуста, морква, картопля, зелень.", recipe: "Класичний рецепт, але без м'ясного бульйону та без засмажки (овочі тушкувати).", dosha: { pitta: "Не додавайте гострий перець і часник.", vata: "Додайте сметану або олію перед подачею.", kapha: "Використовуйте мінімум картоплі." } },
-    { name: "Плов без м'яса (з нутом)", emoji: "🍛", ingredients: "Рис (краще басматі), нут (консервований), морква, спеції для плову.", recipe: "Тушкувати моркву, додати рис і нут, залити водою, готувати до готовності рису.", dosha: { pitta: "Зменшіть кількість гострих спецій.", vata: "Нут може викликати гази, додайте кмин.", kapha: "Дуже ситно, не переїдайте." } }
-  ],
-  dinner: [
-    { name: "Запечений гарбуз з травами", emoji: "🎃", ingredients: "Гарбуз, оливкова олія, прованські трави.", recipe: "Нарізати гарбуз, змастити олією, посипати травами, запекти до м'якості.", dosha: { pitta: "Солодкий смак гарбуза ідеально заспокоює.", vata: "Дуже корисно для нервової системи.", kapha: "Додайте трохи чорного перцю." } },
-    { name: "Тушкована капуста з грибами", emoji: "🥬", ingredients: "Капуста білокачанна, печериці, морква.", recipe: "Легко протушкувати всі інгредієнти до м'якості з мінімумом олії.", dosha: { pitta: "Добре підходить.", vata: "Капуста може викликати здуття, обов'язково тушкувати до повної м'якості + кмин.", kapha: "Чудова легка вечеря." } },
-    { name: "Салат з буряка та горіхів", emoji: "🥗", ingredients: "Варений буряк, волоські горіхи, крапля лимонного соку, олія.", recipe: "Натерти буряк, додати подрібнені горіхи, заправити.", dosha: { pitta: "Лимонний сік замініть на просто олію.", vata: "Горіхи і солодкий буряк відмінно балансують.", kapha: "Можна додати трохи гірчиці." } },
-    { name: "Овочеве рагу", emoji: "🥘", ingredients: "Кабачок, морква, помідор, зелений горошок.", recipe: "Порізати кубиками, тушкувати під кришкою 15-20 хвилин.", dosha: { pitta: "Помідори можуть підвищити кислотність, кладіть менше.", vata: "Додайте олію.", kapha: "Ідеальна легка вечеря." } }
-  ],
-  bachelor: [
-    { name: "Сковорода-рятівниця (Холостяк)", emoji: "🍳", ingredients: "3 яйця, 1 помідор, пів огірка, оливкова олія, кріп.", recipe: "Нарізати помідор, злегка припустити на олії. Вбити яйця (скрембл). Зверху покришити кріп та огірок вприкуску. (5 хв)", dosha: { pitta: "Яйця гріють, але свіжий огірок і кріп балансують вогонь.", vata: "Тепла, масляниста страва відмінно заспокоює Вату.", kapha: "Одне яйце краще прибрати, щоб не було занадто важко." } },
-    { name: "Швидка Паста з Сиром", emoji: "🍝", ingredients: "Макарони (тверді сорти), масло/олія, зубчик часнику, сир, зелень.", recipe: "Відварити макарони. Розігріти олію з часником (потім дістати), перемішати з пастою, посипати сиром.", dosha: { pitta: "Сир помірно, він важкий.", vata: "Чудово і поживно для відновлення сил.", kapha: "Додайте більше чорного перцю для травлення." } },
-    { name: "Лінива вівсянка в банці", emoji: "🫙", ingredients: "Вівсянка, кефір/йогурт, будь-які ягоди/яблуко.", recipe: "Залити вівсянку кефіром з вечора. Вранці просто з'їсти.", dosha: { pitta: "Ідеально охолоджує зранку.", vata: "Краще їсти теплою (розігріти трохи).", kapha: "Кефір може утворювати слиз, краще заливати теплою водою." } },
-    { name: "Холостяцький кус-кус", emoji: "🍲", ingredients: "Кус-кус, консервований тунець або квасоля, огірок.", recipe: "Залити кус-кус окропом на 5 хв. Додати тунець/квасолю і нарізаний огірок. Перемішати.", dosha: { pitta: "Легко і не гостро.", vata: "Кус-кус сухуватий, додайте більше олії.", kapha: "Дуже добре і ситно." } },
-    { name: "Гарячі бутерброди 'Рятувальні'", emoji: "🥪", ingredients: "Цільнозерновий хліб, сир, помідор, зелень.", recipe: "Покласти помідор і сир на хліб, підігріти на сковороді під кришкою або в мікрохвильовці 1 хв.", dosha: { pitta: "Добре.", vata: "Теплий хліб з розплавленим сиром чудово заспокоює.", kapha: "Не зловживати хлібом." } }
-  ]
+const INGREDIENTS_DB = {
+  bases: {
+    breakfast: [
+      { name: "Сирники", emoji: "🥞", cook: "Змішати, сформувати сирники, підсмажити." },
+      { name: "Вівсянка", emoji: "🥣", cook: "Зварити або запарити окропом/кефіром." },
+      { name: "Омлет", emoji: "🍳", cook: "Збити яйця і підсмажити на слабкому вогні." },
+      { name: "Ліниві вареники", emoji: "🥟", cook: "Замісити тісто, кинути в окріп на 3 хв." }
+    ],
+    lunch: [
+      { name: "Гречка", emoji: "🍲", cook: "Відварити до готовності." },
+      { name: "Рис Басматі", emoji: "🍚", cook: "Зварити з додаванням куркуми." },
+      { name: "Кіноа", emoji: "🥘", cook: "Добре промити і відварити." },
+      { name: "Паста (тверді сорти)", emoji: "🍝", cook: "Відварити al dente." }
+    ],
+    dinner: [
+      { name: "Запечений гарбуз", emoji: "🎃", cook: "Нарізати, змастити олією, запекти." },
+      { name: "Цвітна капуста", emoji: "🥦", cook: "Відварити на пару або запекти." },
+      { name: "Овочеве рагу", emoji: "🥘", cook: "Тушкувати на слабкому вогні." },
+      { name: "Легкий суп-пюре", emoji: "🥣", cook: "Зварити овочі і перебити блендером." }
+    ],
+    bachelor: [
+      { name: "Сковорода-рятівниця (яйця)", emoji: "🍳", cook: "Вбити яйця на сковороду." },
+      { name: "Швидка Паста", emoji: "🍝", cook: "Зварити макарони, перемішати з олією." },
+      { name: "Кус-кус", emoji: "🍲", cook: "Залити окропом на 5 хвилин." },
+      { name: "Гарячий бутерброд", emoji: "🥪", cook: "Підігріти в мікрохвильовці 1 хв." }
+    ]
+  },
+  proteins: ["з твердим сиром", "з яйцем", "з горіхами", "з нутом", "із сочевицею"],
+  veggies: ["з помідором та зеленню", "з тушкованою морквою", "зі свіжим огірком", "з кабачком", "зі шпинатом"],
+  spices: ["і щіпкою куркуми", "і чорним перцем", "з прованськими травами", "із зеленим кропом", "з додаванням імбиру"]
 };
+
+function generateRandomRecipe(timeMode, dosha) {
+  const bases = INGREDIENTS_DB.bases[timeMode] || INGREDIENTS_DB.bases.lunch;
+  
+  // Випадковий вибір
+  const base = bases[Math.floor(Math.random() * bases.length)];
+  const protein = INGREDIENTS_DB.proteins[Math.floor(Math.random() * INGREDIENTS_DB.proteins.length)];
+  const veggie = INGREDIENTS_DB.veggies[Math.floor(Math.random() * INGREDIENTS_DB.veggies.length)];
+  const spice = INGREDIENTS_DB.spices[Math.floor(Math.random() * INGREDIENTS_DB.spices.length)];
+  
+  const recipeName = `${base.name} ${veggie} ${protein}`;
+  const ingredients = `${base.name}, ${protein.replace('з ', '').replace('із ', '')}, ${veggie.replace('з ', '').replace('зі ', '')}, ${spice.replace('і ', '').replace('з ', '')}.`;
+  
+  // Генеруємо пораду під Дошу
+  let doshaAdvice = '';
+  if (dosha === 'vata') doshaAdvice = "Додайте більше теплої олії (оливкової/вершкової) для заземлення.";
+  else if (dosha === 'pitta') doshaAdvice = "Уникайте надмірної гостроти. Якщо є часник - краще приберіть.";
+  else doshaAdvice = "Чудово насичує. Додайте трохи більше чорного перцю для стимуляції вогню травлення.";
+
+  return {
+    name: recipeName,
+    emoji: base.emoji,
+    ingredients: ingredients,
+    recipe: `${base.cook} Змішати всі інгредієнти ${spice}.`,
+    doshaAdvice: doshaAdvice
+  };
+}
 
 async function generateRecipes(mode = 'normal') {
   const states = State.currentSoulStates || [];
