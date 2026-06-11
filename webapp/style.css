@@ -744,39 +744,109 @@ body::before {
 }
 
 /* ==========================
-   AUTOCOMPLETE SUGGESTIONS
+   AUTOCOMPLETE SUGGESTIONS — Premium Design
    ========================== */
 .search-suggestions {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   left: 0;
   right: 0;
   background: var(--bg-card);
-  border: 1px solid var(--gold-primary);
-  border-radius: var(--radius-sm);
-  z-index: 10;
-  max-height: 200px;
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  border-radius: var(--radius-md);
+  z-index: 200;
+  max-height: 320px;
   overflow-y: auto;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(201, 168, 76, 0.1);
+  animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(16px);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .suggestion-item {
-  padding: 12px;
-  border-bottom: 1px solid var(--border-color);
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.08);
   cursor: pointer;
   color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  transition: background var(--transition-fast);
 }
+
 .suggestion-item:last-child {
   border-bottom: none;
 }
+
 .suggestion-item:hover {
-  background: var(--bg-main);
+  background: rgba(201, 168, 76, 0.06);
 }
+
+.suggestion-item:active {
+  background: rgba(201, 168, 76, 0.12);
+  transform: scale(0.99);
+}
+
 .suggestion-item-icon {
-  font-size: 16px;
+  font-size: 18px;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Blockpost condition tags */
+.condition-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 2px;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.condition-tag:hover {
+  background: rgba(232, 115, 90, 0.1);
+  border-color: rgba(232, 115, 90, 0.4);
+  color: #e8735a;
+}
+
+/* Search input highlight */
+#condition-search {
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#condition-search:focus {
+  border-color: var(--gold-primary) !important;
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+}
+
+/* Recipe Cards */
+.recipe-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recipe-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important;
 }
 
 /* Одна картка продукту */
@@ -1699,4 +1769,336 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+/* =====================================================
+   АЮРВЕДА БОТ — Адаптивність та Десктопний Інтерфейс (CRM & Dashboard)
+   ===================================================== */
+
+@media (min-width: 768px) {
+  .app {
+    max-width: 1100px !important;
+  }
+  .app-header {
+    max-width: 1100px !important;
+  }
+  .tab-bar {
+    max-width: 1100px !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+  .desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+    margin-top: 12px;
+  }
+  .desktop-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .desktop-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Збільшити внутрішні відступи секцій на десктопі */
+  .tab-section {
+    padding: 24px !important;
+  }
+}
+
+/* =====================================================
+   ПЛАВАЮЧИЙ СМАЙЛИК-ПОМІЧНИК (👋)
+   ===================================================== */
+.waving-emoji-widget {
+  position: fixed;
+  right: -200px; /* Схований за межами екрану за замовчуванням */
+  top: 60%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, var(--bg-card), rgba(201, 168, 76, 0.1));
+  border: 1.5px solid var(--gold-primary);
+  border-right: none;
+  border-radius: 28px 0 0 28px;
+  padding: 10px 16px 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 10px rgba(201, 168, 76, 0.15);
+  transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.waving-emoji-widget.visible {
+  right: 0;
+}
+
+.waving-emoji-widget:hover {
+  background: var(--gold-glow);
+  box-shadow: 0 8px 32px rgba(201, 168, 76, 0.25);
+}
+
+.waving-emoji {
+  font-size: 24px;
+  display: inline-block;
+  animation: waveHand 2.5s infinite ease-in-out;
+  transform-origin: 70% 70%;
+}
+
+.waving-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-primary);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  font-family: var(--font-display);
+}
+
+@keyframes waveHand {
+  0% { transform: rotate( 0.0deg) }
+  10% { transform: rotate(14.0deg) }
+  20% { transform: rotate(-8.0deg) }
+  30% { transform: rotate(14.0deg) }
+  40% { transform: rotate(-4.0deg) }
+  50% { transform: rotate(10.0deg) }
+  60% { transform: rotate( 0.0deg) }
+  100% { transform: rotate( 0.0deg) }
+}
+
+/* =====================================================
+   СТИЛІ ДЛЯ САТЕЛІТІВ КАБІНЕТУ
+   ===================================================== */
+.info-card {
+  transition: all var(--transition-normal);
+}
+.info-card:hover {
+  border-color: rgba(201, 168, 76, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.stat-progress-card {
+  transition: all var(--transition-normal);
+}
+.stat-progress-card:hover {
+  border-color: rgba(61, 153, 112, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.biorhythm-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  font-size: 12px;
+  transition: transform var(--transition-fast);
+}
+
+
+
+/* =====================================================
+   АЮРВЕДА БОТ — Адаптивність та Десктопний Інтерфейс (CRM & Dashboard)
+   ===================================================== */
+
+@media (min-width: 768px) {
+  .app {
+    max-width: 1100px !important;
+  }
+  .app-header {
+    max-width: 1100px !important;
+  }
+  .tab-bar {
+    max-width: 1100px !important;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+  .desktop-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+    margin-top: 12px;
+  }
+  .desktop-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .desktop-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  /* Збільшити внутрішні відступи секцій на десктопі */
+  .tab-section {
+    padding: 24px !important;
+  }
+}
+
+/* =====================================================
+   ПЛАВАЮЧИЙ СМАЙЛИК-ПОМІЧНИК (👋)
+   ===================================================== */
+.waving-emoji-widget {
+  position: fixed;
+  right: -200px; /* Схований за межами екрану за замовчуванням */
+  top: 60%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, var(--bg-card), rgba(201, 168, 76, 0.1));
+  border: 1.5px solid var(--gold-primary);
+  border-right: none;
+  border-radius: 28px 0 0 28px;
+  padding: 10px 16px 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 10px rgba(201, 168, 76, 0.15);
+  transition: right 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.waving-emoji-widget.visible {
+  right: 0;
+}
+
+.waving-emoji-widget:hover {
+  background: var(--gold-glow);
+  box-shadow: 0 8px 32px rgba(201, 168, 76, 0.25);
+}
+
+.waving-emoji {
+  font-size: 24px;
+  display: inline-block;
+  animation: waveHand 2.5s infinite ease-in-out;
+  transform-origin: 70% 70%;
+}
+
+.waving-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-primary);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  font-family: var(--font-display);
+}
+
+@keyframes waveHand {
+  0% { transform: rotate( 0.0deg) }
+  10% { transform: rotate(14.0deg) }
+  20% { transform: rotate(-8.0deg) }
+  30% { transform: rotate(14.0deg) }
+  40% { transform: rotate(-4.0deg) }
+  50% { transform: rotate(10.0deg) }
+  60% { transform: rotate( 0.0deg) }
+  100% { transform: rotate( 0.0deg) }
+}
+
+/* =====================================================
+   СТИЛІ ДЛЯ САТЕЛІТІВ КАБІНЕТУ
+   ===================================================== */
+.info-card {
+  transition: all var(--transition-normal);
+}
+.info-card:hover {
+  border-color: rgba(201, 168, 76, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.stat-progress-card {
+  transition: all var(--transition-normal);
+}
+.stat-progress-card:hover {
+  border-color: rgba(61, 153, 112, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.biorhythm-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-card);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  font-size: 12px;
+  transition: transform var(--transition-fast);
+}
+
+.biorhythm-step:hover {
+  transform: scale(1.01);
+  border-color: var(--gold-primary);
+}
+
+.biorhythm-time {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--gold-primary);
+  background: var(--bg-primary);
+  padding: 2px 6px;
+  border-radius: 6px;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* =====================================================
+   АДАПТИВНІ ШРИФТИ ТА АНІМАЦІЯ ВІДЛІТАННЯ СМАЙЛИКА
+   ===================================================== */
+
+@media (min-width: 768px) {
+  :root {
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-md: 18px;
+    --font-size-lg: 22px;
+    --font-size-xl: 26px;
+    --font-size-2xl: 36px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :root {
+    --font-size-xs: 13px;
+    --font-size-sm: 15px;
+    --font-size-base: 17px;
+    --font-size-md: 20px;
+    --font-size-lg: 24px;
+    --font-size-xl: 30px;
+    --font-size-2xl: 40px;
+  }
+}
+
+/* Клас для анімації відлітання смайлика */
+.waving-emoji-widget.fly-away {
+  animation: flyOff 1.2s forwards cubic-bezier(0.25, 0.8, 0.25, 1);
+  pointer-events: none; /* Забороняємо кліки під час анімації */
+}
+
+@keyframes flyOff {
+  0% {
+    right: 0;
+    top: 60%;
+    transform: translateY(-50%) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+  25% {
+    right: 15px;
+    top: 63%;
+    transform: translateY(-50%) rotate(-15deg) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    right: 250px;
+    top: -200px;
+    transform: translateY(-50%) rotate(30deg) scale(0.1);
+    opacity: 0;
+  }
 }

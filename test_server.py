@@ -64,8 +64,8 @@ async def api_ration(request):
 
     # Ініціалізуємо мок-профіль якщо треба
     storage = get_user_storage(MOCK_USER_ID)
-    if not storage.exists():
-        storage.save_profile(MOCK_PROFILE)
+    if not await storage.exists():
+        await storage.save_profile(MOCK_PROFILE)
 
     body = {}
     try:
@@ -115,10 +115,10 @@ async def main():
     site = web.TCPSite(runner, "127.0.0.1", 8080)
     await site.start()
     print("=" * 50)
-    print("  🌿 АЮРВЕДА БОТ — Тест-сервер запущено!")
+    print("  AYURVEDA BOT - Test-server zapusheno!")
     print("=" * 50)
-    print(f"  Відкрий у браузері: http://127.0.0.1:8080/webapp/")
-    print("  Натисни Ctrl+C для зупинки")
+    print("  Open in browser: http://127.0.0.1:8080/webapp/")
+    print("  Press Ctrl+C to stop")
     print("=" * 50)
     await asyncio.Event().wait()
 

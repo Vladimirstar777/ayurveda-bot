@@ -48,8 +48,10 @@
            TAB 1: РАЦІОН
            ================== -->
       <div class="tab-pane" id="tab-ration" role="tabpanel">
+        <div class="desktop-grid">
+          <div class="desktop-left-column">
 
-        <!-- ДИНАЧАР'Я (ТРЕКЕР ЗВИЧОК) -->
+            <!-- ДИНАЧАР'Я (ТРЕКЕР ЗВИЧОК) -->
         <div class="tab-section mb-md">
           <div class="section-header">
             <div class="section-title">🌅 Диначар'я (Трекер Звичок)</div>
@@ -99,8 +101,11 @@
           </button>
         </div>
 
-        <!-- Результат раціону -->
-        <div id="ration-result" class="hidden">
+          </div><!-- /desktop-left-column -->
+          <div class="desktop-right-column">
+
+            <!-- Результат раціону -->
+            <div id="ration-result" class="hidden">
 
           <!-- Рекомендовані продукти -->
           <div class="products-section mb-md">
@@ -165,6 +170,8 @@
             </div>
           </div>
         </div>
+          </div><!-- /desktop-right-column -->
+        </div><!-- /desktop-grid -->
 
       </div><!-- /tab-ration -->
 
@@ -172,8 +179,10 @@
            TAB 2: ПРОФІЛЬ
            ================== -->
       <div class="tab-pane hidden" id="tab-profile" role="tabpanel">
-        <div class="tab-section">
-          <div class="tab-section-title">👤 Мій Профіль</div>
+        <div class="desktop-grid">
+          <div class="desktop-left-column">
+            <div class="tab-section">
+              <div class="tab-section-title">👤 Мій Профіль</div>
           <div class="tab-section-desc">Заповни анкету — чим точніші дані, тим персональніший раціон</div>
 
           <form id="profile-form" onsubmit="saveProfile(event)">
@@ -193,6 +202,33 @@
                 maxlength="60"
               />
               <div class="form-hint" id="hint-name"></div>
+            </div>
+
+            <!-- Стать -->
+            <div class="form-group">
+              <label class="form-label" for="input-gender">
+                <span class="form-label-icon">🧬</span>
+                Стать
+              </label>
+              <select id="input-gender" class="form-input" style="background:var(--bg-card); color:var(--text-primary); border:1px solid var(--border-color); height:48px;">
+                <option value="">Оберіть стать...</option>
+                <option value="male">Чоловік</option>
+                <option value="female">Жінка</option>
+              </select>
+              <div class="form-hint" id="hint-gender">Впливає на тип аватара особистого кабінету</div>
+            </div>
+
+            <!-- Фото профілю -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="form-label-icon">📸</span>
+                Фото профілю (за бажанням)
+              </label>
+              <div style="display:flex; align-items:center; gap:16px;">
+                <div id="profile-photo-preview" class="client-avatar" style="width:50px; height:50px; border-radius:50%; font-size:24px; display:flex; align-items:center; justify-content:center; background:var(--bg-card); border:1px solid var(--border-color); cursor:pointer; overflow:hidden;" onclick="document.getElementById('profile-photo-input').click()">🌿</div>
+                <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('profile-photo-input').click()">Завантажити фото</button>
+                <input type="file" id="profile-photo-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(event)">
+              </div>
             </div>
 
             <!-- Телефон -->
@@ -278,16 +314,28 @@
             </button>
 
           </form>
-        </div>
+            </div>
+          </div><!-- /desktop-left-column -->
+          
+          <div class="desktop-right-column">
+            <div class="tab-section">
+              <div class="tab-section-title">🧬 Аюрведа-Квіз</div>
+              <div class="tab-section-desc">Ми пропонуємо вам пройти тест для визначення вашого типу Пракріті (Доші), щоб підібрати найдієвіші аюрведичні рекомендації.</div>
+              <div class="card" style="text-align:center; padding: 24px 16px; background:linear-gradient(135deg, var(--bg-card), rgba(201,168,76,0.05)); border:1px solid var(--gold-primary);">
+                <div style="font-size:48px; margin-bottom:12px;">🧘</div>
+                <div style="font-weight:700; margin-bottom:8px;">Хто ти у всесвіті?</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px;">Визнач баланс стихій (Повітря, Вогонь, Вода, Земля) у твоєму тілі.</div>
+                <button type="button" class="btn btn-gold btn-full" onclick="openQuiz()">🧘 Пройти міні-анкету визначення Доші</button>
+              </div>
+            </div>
+          </div><!-- /desktop-right-column -->
+        </div><!-- /desktop-grid -->
       </div><!-- /tab-profile -->
 
-      <!-- ==================
-           TAB 3: ЗДОРОВ'Я (БЛОКПОСТ)
-           ================== -->
       <div class="tab-pane hidden" id="tab-health" role="tabpanel">
         <div class="tab-section">
           <div class="tab-section-title">🏥 Медичний Блокпост</div>
-          <div class="tab-section-desc">Відзнач свої медичні особливості. Продукти-тригери будуть автоматично виключені з раціону.</div>
+          <div class="tab-section-desc">Введіть назву захворювання — ШІ знайде відповідний варіант та автоматично виключить продукти-тригери з раціону.</div>
 
           <div class="blockpost-warning">
             <div class="blockpost-warning-icon">🛡️</div>
@@ -296,15 +344,29 @@
             </div>
           </div>
 
-          <!-- Пошук хвороб -->
-          <div style="position:relative; margin-bottom:16px;">
-            <input type="text" id="condition-search" class="ai-input" placeholder="🔍 Введіть назву захворювання..." oninput="handleConditionSearch(event)" style="width:100%; border:1px solid var(--gold-primary);">
+          <!-- Розумний Пошук Хвороб -->
+          <div style="position:relative; margin-bottom:8px;">
+            <input 
+              type="text" 
+              id="condition-search" 
+              class="ai-input" 
+              placeholder="🔍 Наприклад: діабет, гастрит, тиск..."
+              oninput="handleConditionSearch(event)"
+              autocomplete="off"
+              style="width:100%; border:1px solid var(--border-color); font-size:14px; padding:14px 16px;"
+            >
             <div id="condition-suggestions" class="search-suggestions hidden"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:16px;padding:0 4px;">
+            💡 Починайте друкувати — ШІ підкаже варіанти. Шукаємо серед <strong style="color:var(--gold-primary);">42+ захворювань</strong>. Якщо не знайдено — відкриємо аюрведичну довідку онлайн.
           </div>
 
           <!-- Вибрані хвороби -->
-          <div class="section-title mb-sm" style="font-size:14px; color:var(--text-secondary);">Ваші діагнози:</div>
-          <div class="conditions-list" id="selected-conditions" style="min-height:50px;">
+          <div class="section-header" style="margin-bottom:8px;">
+            <div class="section-title" style="font-size:14px;">📋 Ваші діагнози:</div>
+            <div class="section-count" id="conditions-count-badge">0 обмежень</div>
+          </div>
+          <div class="conditions-list" id="selected-conditions" style="min-height:50px; margin-bottom:16px;">
             <!-- Генерується JS -->
             <div style="color:var(--text-muted);text-align:center;padding:16px;font-size:12px;">Нічого не вибрано</div>
           </div>
@@ -315,13 +377,16 @@
         </div>
       </div><!-- /tab-health -->
 
+
       <!-- ==================
            TAB 4: КАРТКА КЛІЄНТА
            ================== -->
       <div class="tab-pane hidden" id="tab-card" role="tabpanel">
+        <div class="desktop-grid">
+          <div class="desktop-left-column">
 
-        <!-- Картка клієнта -->
-        <div class="client-card-hero" id="client-card-hero">
+            <!-- Картка клієнта -->
+            <div class="client-card-hero" id="client-card-hero">
           <div class="client-avatar" id="client-avatar">🌿</div>
           <div class="client-name" id="client-name">—</div>
           <div class="client-dosha" id="client-dosha-text">Тип Доші не визначено</div>
@@ -341,8 +406,55 @@
           </div>
         </div>
 
-        <!-- Медичний Архів (Medical Vault) -->
-        <div class="tab-section" id="medical-vault-section" style="padding-top:0;">
+        <!-- Розділ 1: Загальна анкета (General Info) -->
+        <div class="tab-section" style="margin-top:16px;">
+          <div class="section-header">
+            <div class="section-title">📋 Особисті дані</div>
+          </div>
+          <div class="card-info-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+            <div class="info-card" style="background:var(--bg-card); padding:12px; border-radius:12px; border:1px solid var(--border-color);">
+              <div style="font-size:11px; color:var(--text-muted);">Ім'я</div>
+              <div id="card-info-name" style="font-weight:600; font-size:14px; margin-top:4px;">—</div>
+            </div>
+            <div class="info-card" style="background:var(--bg-card); padding:12px; border-radius:12px; border:1px solid var(--border-color);">
+              <div style="font-size:11px; color:var(--text-muted);">Телефон</div>
+              <div id="card-info-phone" style="font-weight:600; font-size:14px; margin-top:4px;">—</div>
+            </div>
+            <div class="info-card" style="background:var(--bg-card); padding:12px; border-radius:12px; border:1px solid var(--border-color);">
+              <div style="font-size:11px; color:var(--text-muted);">Місто</div>
+              <div id="card-info-city" style="font-weight:600; font-size:14px; margin-top:4px;">—</div>
+            </div>
+            <div class="info-card" style="background:var(--bg-card); padding:12px; border-radius:12px; border:1px solid var(--border-color);">
+              <div style="font-size:11px; color:var(--text-muted);">Стать</div>
+              <div id="card-info-gender" style="font-weight:600; font-size:14px; margin-top:4px;">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Розділ 2: Моя статистика (My Stats Dashboard) -->
+        <div class="tab-section">
+          <div class="section-header">
+            <div class="section-title">📊 Моя статистика балансу</div>
+          </div>
+          <div class="card-stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+            <div class="stat-progress-card" style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); text-align:center;">
+              <div style="font-size:24px;">💧</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Трекер води вранці</div>
+              <div id="card-stats-water" style="font-size:14px; font-weight:700; color:var(--gold-primary); margin-top:4px;">Не виконано</div>
+            </div>
+            <div class="stat-progress-card" style="background:var(--bg-card); padding:14px; border-radius:12px; border:1px solid var(--border-color); text-align:center;">
+              <div style="font-size:24px;">🧘</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Виконані звички</div>
+              <div id="card-stats-habits" style="font-size:14px; font-weight:700; color:var(--color-safe); margin-top:4px;">0 / 3</div>
+            </div>
+          </div>
+        </div>
+
+          </div><!-- /desktop-left-column -->
+          
+          <div class="desktop-right-column">
+            <!-- Медичний Архів (Medical Vault) -->
+            <div class="tab-section" id="medical-vault-section" style="padding-top:0; margin-top:0;">
           <div class="section-header">
             <div class="section-title">📁 Медичний архів</div>
             <div class="section-count" id="vault-count">0 / 10</div>
@@ -365,8 +477,19 @@
           <div class="placeholder-desc">Підбір раціону на основі медичних діагнозів</div>
         </div>
 
-        <!-- Активні обмеження -->
-        <div class="tab-section" id="card-conditions-section" style="padding-top:0;">
+            <!-- Розділ 3: Добові біоритми (Daily Biorhythms Schedule) -->
+            <div class="tab-section">
+              <div class="section-header">
+                <div class="section-title">⚡ Аюрведичний розпорядок дня</div>
+              </div>
+              <div id="card-biorhythms-container" style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+                <!-- Генерується динамічно під Дошу -->
+                <div style="color:var(--text-muted); font-size:12px; text-align:center; padding:12px;">Заповніть анкету, щоб побачити розпорядок дня.</div>
+              </div>
+            </div>
+
+            <!-- Активні обмеження -->
+            <div class="tab-section" id="card-conditions-section" style="padding-top:0;">
           <div class="section-header">
             <div class="section-title">🏥 Активні обмеження</div>
             <div class="section-count" id="card-conditions-count">0</div>
@@ -377,6 +500,8 @@
             </div>
           </div>
         </div>
+          </div><!-- /desktop-right-column -->
+        </div><!-- /desktop-grid -->
 
       </div><!-- /tab-card -->
 
@@ -384,8 +509,10 @@
            TAB 5: ГЕНЕРАТОР СТРАВ
            ================== -->
       <div class="tab-pane hidden" id="tab-recipe" role="tabpanel">
-        <div class="tab-section">
-          <div class="tab-section-title">🍳 Розумний Рецепт</div>
+        <div class="desktop-grid">
+          <div class="desktop-left-column">
+            <div class="tab-section">
+              <div class="tab-section-title">🍳 Розумний Рецепт</div>
           <div class="tab-section-desc">Генерація 3-х варіантів рецептів на основі вашого стану та медичних показників.</div>
           
           <!-- Вибір прийому їжі -->
@@ -415,9 +542,15 @@
             </button>
           </div>
           
-          <div id="recipe-results" class="hidden mt-md">
-            <!-- Рецепти будуть тут -->
-          </div>
+            </div>
+          </div><!-- /desktop-left-column -->
+          
+          <div class="desktop-right-column">
+            <div id="recipe-results" class="hidden" style="margin-top: 0;">
+              <!-- Рецепти будуть тут -->
+            </div>
+          </div><!-- /desktop-right-column -->
+        </div><!-- /desktop-grid -->
         </div>
       </div><!-- /tab-recipe -->
 
@@ -521,6 +654,12 @@
         Скасувати
       </button>
     </div>
+  </div>
+
+    <!-- WAITING WIDGET -->
+  <div id="waving-emoji-widget" class="waving-emoji-widget" onclick="toggleAssistant()">
+    <span class="waving-emoji">👋</span>
+    <span class="waving-text">ШІ Асистент</span>
   </div>
 
   <script src="app.js"></script>

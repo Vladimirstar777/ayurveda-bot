@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    container_name: ayurveda_bot
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./storage:/app/storage
+    environment:
+      - PORT=8080
+      - HOST=0.0.0.0
+      - BOT_TOKEN=${BOT_TOKEN}
+      - WEBAPP_URL=${WEBAPP_URL}
+      - BOT_MODE=${BOT_MODE:-polling}
+      - WEBHOOK_SECRET=${WEBHOOK_SECRET:-ayurveda_secret_2026}
+      - DEBUG=${DEBUG:-False}
+      - DATABASE_URL=${DATABASE_URL}
